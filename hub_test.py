@@ -11,6 +11,7 @@ class HubTest(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(HubTest, self).__init__(*args, **kwargs)
+        self.mac_to_port = {}
 
     def add_flow(self, datapath, priority, match, actions, buffer_id=None):
         ofproto = datapath.ofproto
@@ -43,10 +44,16 @@ class HubTest(app_manager.RyuApp):
         src = eth.src
 
         dpid = datapath.id
+        self.mac_to_port.setdefault(dpid, {})
 
         self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
 
-        out_port = ofproto.OFPP_FLOOD
+        self.mac_to_port[dpid][src] = in_port
+
+        if dst in self.mac_to_port[dpid]:
+            out_port = self.mac_to_port[dpid][dst]
+        else:
+            out_port = ofproto.OFPP_FLOOD
 
         actions = [parser.OFPActionOutput(out_port)]
 
