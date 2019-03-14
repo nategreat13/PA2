@@ -3,7 +3,6 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 
 class HubTest(app_manager.RyuApp):
-    OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
     def __init__(self, *args, **kwargs):
         super(HubTest, self).__init__(*args, **kwargs)
