@@ -55,7 +55,8 @@ class HubTest(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        actions = [parser.OFPActionOutput(out_port)]
+        # actions = [parser.OFPActionOutput(out_port)]
+        actions = [ofp_parser.OFPActionOutput(ofp.OFPP_FLOOD)]
 
         if out_port != ofproto.OFPP_FLOOD:
             match = parser.OFPMatch(in_port=in_port, eth_dst=dst, eth_src=src)
