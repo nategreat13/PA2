@@ -40,8 +40,7 @@ class HubTest(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        # actions = [parser.OFPActionOutput(out_port)]
-        actions = [ofp_parser.OFPActionOutput(ofp.OFPP_FLOOD)]
+        actions = [parser.OFPActionOutput(out_port)]
         
         data = None
         if msg.buffer_id == ofproto.OFP_NO_BUFFER:
