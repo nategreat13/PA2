@@ -18,7 +18,15 @@ class L2Switch(app_manager.RyuApp):
         ofp_parser = dp.ofproto_parser
         in_port = msg.match['in_port']
         
-        print("In Port: %s", in_port)
+        pkt = packet.Packet(msg.data)
+        eth = pkt.get_protocols(ethernet.ethernet)[0]
+        
+        dst = eth.dst
+        src = eth.src
+        
+        dpid = datapath.id
+        
+        self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
         
         actions = [ofp_parser.OFPActionOutput(ofp.OFPP_FLOOD)]
         out = ofp_parser.OFPPacketOut(datapath=dp, buffer_id=msg.buffer_id, in_port=in_port, actions=actions)
