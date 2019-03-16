@@ -32,6 +32,6 @@ class L2Switch(app_manager.RyuApp):
         
         self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
         
-        actions = [parser.OFPActionOutput(ofp.OFPP_FLOOD)]
-        out = parser.OFPPacketOut(datapath=dp, buffer_id=msg.buffer_id, in_port=in_port, actions=actions)
+        actions = [parser.OFPActionOutput(ofproto.OFPP_FLOOD)]
+        out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id, in_port=in_port, actions=actions)
         dp.send_msg(out)
