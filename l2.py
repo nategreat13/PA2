@@ -15,10 +15,11 @@ class L2Switch(app_manager.RyuApp):
     
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
+        
         msg = ev.msg
-        dp = msg.datapath
-        ofp = dp.ofproto
-        ofp_parser = dp.ofproto_parser
+        datapath = msg.datapath
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
         in_port = msg.match['in_port']
         
         pkt = packet.Packet(msg.data)
@@ -31,6 +32,6 @@ class L2Switch(app_manager.RyuApp):
         
         self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
         
-        actions = [ofp_parser.OFPActionOutput(ofp.OFPP_FLOOD)]
-        out = ofp_parser.OFPPacketOut(datapath=dp, buffer_id=msg.buffer_id, in_port=in_port, actions=actions)
+        actions = [parser.OFPActionOutput(ofp.OFPP_FLOOD)]
+        out = parser.OFPPacketOut(datapath=dp, buffer_id=msg.buffer_id, in_port=in_port, actions=actions)
         dp.send_msg(out)
