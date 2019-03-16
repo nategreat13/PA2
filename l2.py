@@ -34,4 +34,4 @@ class L2Switch(app_manager.RyuApp):
         
         actions = [parser.OFPActionOutput(ofproto.OFPP_FLOOD)]
         out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id, in_port=in_port, actions=actions)
-        dp.send_msg(out)
+        datapath.send_msg(out)
