@@ -6,6 +6,7 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
+import array
 
 class packet_parse(app_manager.RyuApp):
     
@@ -18,5 +19,5 @@ class packet_parse(app_manager.RyuApp):
         pkt = packet.Packet(array.array('B', ev.msg.data))
         for p in pkt.protocols:
             print p
-        
+
 
