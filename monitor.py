@@ -7,11 +7,11 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
 
-
 class monitor(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     
     def __init__(self, *args, **kwargs):
+        super(monitor, self).__init__(*args, **kwargs)
     
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
