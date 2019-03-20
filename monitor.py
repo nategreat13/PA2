@@ -32,11 +32,11 @@ class monitor(app_manager.RyuApp):
         dst_ip = pkt_arp.dst_ip
         src_mac = pkt_arp.src_mac
         dst_mac = pkt_arp.dst_mac
-#
-#        datapath = msg.datapath
-#        port = msg.match['in_port']
-#
-#        self.logger.info("----------------------")
+
+        datapath = msg.datapath
+        port = msg.match['in_port']
+
+        self.logger.info("----------------------")
 #        self.logger.info("Packet ( %s) Received on Port(%s) Eth %s", packet_count, port, "ARP")
 #        self.logger.info("\tARP")
 #        self.logger.info("\t\tSrc  IP: %s", src_ip)
