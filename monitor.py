@@ -20,18 +20,18 @@ class monitor(app_manager.RyuApp):
         # Get message
         msg = ev.msg
         
-#        # Get packet out of message
-#        pkt = packet.Packet(data=msg.data)
-#
-#        eth = pkt.get_protocol(ethernet.ethernet)
-#        dst = eth.dst
-#        src = eth.src
-#
-#        pkt_arp = pkt.get_protocol(arp.arp)
-#        src_ip = pkt_arp.src_ip
-#        dst_ip = pkt_arp.dst_ip
-#        src_mac = pkt_arp.src_mac
-#        dst_mac = pkt_arp.dst_mac
+        # Get packet out of message
+        pkt = packet.Packet(data=msg.data)
+
+        eth = pkt.get_protocol(ethernet.ethernet)
+        dst = eth.dst
+        src = eth.src
+
+        pkt_arp = pkt.get_protocol(arp.arp)
+        src_ip = pkt_arp.src_ip
+        dst_ip = pkt_arp.dst_ip
+        src_mac = pkt_arp.src_mac
+        dst_mac = pkt_arp.dst_mac
 #
 #        datapath = msg.datapath
 #        port = msg.match['in_port']
