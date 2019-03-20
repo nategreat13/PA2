@@ -16,28 +16,23 @@ class monitor(app_manager.RyuApp):
     
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
+        # Get message
         msg = ev.msg
+        
+        # Get packet out of message
+        pkt = packet.Packet(data=msg.data)
+        
+        pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
+        dst = eth.dst
+        src = eth.src
+        
+        pkt_arp = pkt.get_protocol(arp.arp)
+        src_ip = pkt_arp.src_ip
+        dst_ip = pkt_arp.dst_ip
+
         datapath = msg.datapath
         port = msg.match['in_port']
-        pkt = packet.Packet(data=msg.data)
-        self.logger.info("packet-in %s" % (pkt,))
-        pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
-        if not pkt_ethernet:
-            return
-        pkt_arp = pkt.get_protocol(arp.arp)
 
-
-#
-#        msg = ev.msg
-#        pkt = packet.Packet(msg.data)
-#        eth = pkt.get_protocol(ethernet.ethernet)
-#        arp = pkt.get_protocol(arp.arp)
-#
-#        dst = eth.dst
-#        src = eth.src
-#
-#        src_ip = arp.src_ip
-#        dst_ip = arp.dst_ip
-#
-#        self.logger.info("packet in %s %s", src, dst)
-#        self.logger.info("packet in %s %s", src_ip, dst_ip)
+        self.logger.info("In port %s", port)
+        self.logger.info("src, dst %s %s", src, dst)
+        self.logger.info("src_ip, dst_ip %s %s", src_ip, dst_ip)
