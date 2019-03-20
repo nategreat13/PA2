@@ -22,13 +22,13 @@ class monitor(app_manager.RyuApp):
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
         
-        pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
+        eth = pkt.get_protocol(ethernet.ethernet)
         dst = eth.dst
         src = eth.src
         
-        pkt_arp = pkt.get_protocol(arp.arp)
-        src_ip = pkt_arp.src_ip
-        dst_ip = pkt_arp.dst_ip
+        arp = pkt.get_protocol(arp.arp)
+        src_ip = arp.src_ip
+        dst_ip = arp.dst_ip
 
         datapath = msg.datapath
         port = msg.match['in_port']
