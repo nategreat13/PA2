@@ -19,8 +19,8 @@ class monitor(app_manager.RyuApp):
         
         msg = ev.msg
         pkt = packet.Packet(msg.data)
-        eth = pkt.get_protocols(ethernet.ethernet)[0]
-        arp = pkt.get_protocols(arp.arp)[0]
+        eth = pkt.get_protocol(ethernet.ethernet)
+        arp = pkt.get_protocol(arp.arp)
         
         dst = eth.dst
         src = eth.src
