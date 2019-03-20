@@ -20,28 +20,28 @@ class monitor(app_manager.RyuApp):
         # Get message
         msg = ev.msg
         
-        # Get packet out of message
-        pkt = packet.Packet(data=msg.data)
-        
-        eth = pkt.get_protocol(ethernet.ethernet)
-        dst = eth.dst
-        src = eth.src
-        
-        pkt_arp = pkt.get_protocol(arp.arp)
-        src_ip = pkt_arp.src_ip
-        dst_ip = pkt_arp.dst_ip
-        src_mac = pkt_arp.src_mac
-        dst_mac = pkt_arp.dst_mac
-
-        datapath = msg.datapath
-        port = msg.match['in_port']
-        
-        self.logger.info("----------------------")
-        self.logger.info("Packet ( %s) Received on Port(%s) Eth %s", packet_count, port, "ARP")
-        self.logger.info("\tARP")
-        self.logger.info("\t\tSrc  IP: %s", src_ip)
-        self.logger.info("\t\tDest IP: %s", dst_ip)
-        self.logger.info("\t\tSrc  MAC: %s", src_mac)
-        self.logger.info("\t\tDest MAC: %s", dst_mac)
-
-        packet_count++
+#        # Get packet out of message
+#        pkt = packet.Packet(data=msg.data)
+#
+#        eth = pkt.get_protocol(ethernet.ethernet)
+#        dst = eth.dst
+#        src = eth.src
+#
+#        pkt_arp = pkt.get_protocol(arp.arp)
+#        src_ip = pkt_arp.src_ip
+#        dst_ip = pkt_arp.dst_ip
+#        src_mac = pkt_arp.src_mac
+#        dst_mac = pkt_arp.dst_mac
+#
+#        datapath = msg.datapath
+#        port = msg.match['in_port']
+#
+#        self.logger.info("----------------------")
+#        self.logger.info("Packet ( %s) Received on Port(%s) Eth %s", packet_count, port, "ARP")
+#        self.logger.info("\tARP")
+#        self.logger.info("\t\tSrc  IP: %s", src_ip)
+#        self.logger.info("\t\tDest IP: %s", dst_ip)
+#        self.logger.info("\t\tSrc  MAC: %s", src_mac)
+#        self.logger.info("\t\tDest MAC: %s", dst_mac)
+#
+#        packet_count++
