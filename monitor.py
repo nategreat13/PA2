@@ -13,7 +13,7 @@ class monitor(app_manager.RyuApp):
     
     def __init__(self, *args, **kwargs):
         super(monitor, self).__init__(*args, **kwargs)
-        packet_count = 1
+        self.packet_count = 1
     
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
