@@ -26,9 +26,9 @@ class monitor(app_manager.RyuApp):
         dst = eth.dst
         src = eth.src
         
-        arp = pkt.get_protocol(arp.arp)
-        src_ip = arp.src_ip
-        dst_ip = arp.dst_ip
+        pkt_arp = pkt.get_protocol(arp.arp)
+        src_ip = pkt_arp.src_ip
+        dst_ip = pkt_arp.dst_ip
 
         datapath = msg.datapath
         port = msg.match['in_port']
