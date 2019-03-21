@@ -26,8 +26,13 @@ class monitor(app_manager.RyuApp):
         eth = pkt.get_protocol(ethernet.ethernet)
         dst = eth.dst
         src = eth.src
+        
+        self.logger.info("----------------------")
+        self.logger.info("%s", pkt)
+        self.logger.info("----------------------")
 
         pkt_arp = pkt.get_protocol(arp.arp)
+        
         src_ip = pkt_arp.src_ip
         dst_ip = pkt_arp.dst_ip
         src_mac = pkt_arp.src_mac
@@ -37,11 +42,12 @@ class monitor(app_manager.RyuApp):
         port = msg.match['in_port']
 
         self.logger.info("----------------------")
-        self.logger.info("Packet ( %s) Received on Port(%s) Eth %s", self.packet_count, port, "ARP")
+        self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, port)
         self.logger.info("\tARP")
         self.logger.info("\t\tSrc  IP: %s", src_ip)
         self.logger.info("\t\tDest IP: %s", dst_ip)
         self.logger.info("\t\tSrc  MAC: %s", src_mac)
         self.logger.info("\t\tDest MAC: %s", dst_mac)
+        
 
         self.packet_count += 1
