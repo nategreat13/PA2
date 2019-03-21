@@ -7,6 +7,7 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import arp
 from ryu.lib.packet import ipv4
+from ryu.lib.packet import icmp
 from ryu.lib.packet import ether_types
 
 class monitor(app_manager.RyuApp):
@@ -24,11 +25,10 @@ class monitor(app_manager.RyuApp):
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
         
-        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+        pkt_icmp = pkt.get_protocol(icmp.icmp)
         self.logger.info("--------------------------------------------")
-        self.logger.info("%s", pkt_ipv4)
+        self.logger.info("%s", pkt_icmp)
         self.logger.info("--------------------------------------------")
-        
         
         pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
