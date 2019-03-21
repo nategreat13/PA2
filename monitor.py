@@ -27,7 +27,7 @@ class monitor(app_manager.RyuApp):
 
         pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
-            parse_arp(pkt_arp, msg, pkt)
+            self.parse_arp(pkt_arp, msg, pkt)
             return
         
         eth = pkt.get_protocol(ethernet.ethernet)
