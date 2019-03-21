@@ -49,7 +49,7 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\tNOT IPV4")
         self.logger.info("\tNOT IPV6")
         self.logger.info("\tETH")
-        self.logger.info("\t\tFrom MAC: %s", scr)
+        self.logger.info("\t\tFrom MAC: %s", src)
         self.logger.info("\t\tTo   MAC: %s", dst)
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", dst, src)
