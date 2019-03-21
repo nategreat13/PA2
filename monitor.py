@@ -22,9 +22,6 @@ class monitor(app_manager.RyuApp):
         
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
-        
-        self.logger.info("----------------------")
-
         pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
             self.parse_arp(pkt_arp, msg, pkt)
@@ -36,18 +33,18 @@ class monitor(app_manager.RyuApp):
         
     def parse_arp(pkt_arp, msg, pkt):
         src_ip = pkt_arp.src_ip
-            dst_ip = pkt_arp.dst_ip
-            src_mac = pkt_arp.src_mac
-            dst_mac = pkt_arp.dst_mac
-            
-            datapath = msg.datapath
-            port = msg.match['in_port']
-            
-            self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, port)
-            self.logger.info("\tARP")
-            self.logger.info("\t\tSrc  IP: %s", src_ip)
-            self.logger.info("\t\tDest IP: %s", dst_ip)
-            self.logger.info("\t\tSrc  MAC: %s", src_mac)
-            self.logger.info("\t\tDest MAC: %s", dst_mac)
-            
-            self.packet_count += 1
+        dst_ip = pkt_arp.dst_ip
+        src_mac = pkt_arp.src_mac
+        dst_mac = pkt_arp.dst_mac
+        
+        datapath = msg.datapath
+        port = msg.match['in_port']
+        self.logger.info("----------------------")
+        self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, port)
+        self.logger.info("\tARP")
+        self.logger.info("\t\tSrc  IP: %s", src_ip)
+        self.logger.info("\t\tDest IP: %s", dst_ip)
+        self.logger.info("\t\tSrc  MAC: %s", src_mac)
+        self.logger.info("\t\tDest MAC: %s", dst_mac)
+        
+        self.packet_count += 1
