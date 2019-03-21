@@ -31,7 +31,7 @@ class monitor(app_manager.RyuApp):
         dst = eth.dst
         src = eth.src
         
-    def parse_arp(pkt_arp, msg, pkt):
+    def parse_arp(self, pkt_arp, msg, pkt):
         src_ip = pkt_arp.src_ip
         dst_ip = pkt_arp.dst_ip
         src_mac = pkt_arp.src_mac
