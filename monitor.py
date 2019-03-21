@@ -27,24 +27,31 @@ class monitor(app_manager.RyuApp):
             self.parse_arp(pkt_arp, msg, pkt)
             return
         
-        eth = pkt.get_protocol(ethernet.ethernet)
-        dst = eth.dst
-        src = eth.src
-        
     def parse_arp(self, pkt_arp, msg, pkt):
         src_ip = pkt_arp.src_ip
         dst_ip = pkt_arp.dst_ip
         src_mac = pkt_arp.src_mac
         dst_mac = pkt_arp.dst_mac
         
+        eth = pkt.get_protocol(ethernet.ethernet)
+        dst = eth.dst
+        src = eth.src
+        
         datapath = msg.datapath
         port = msg.match['in_port']
-        self.logger.info("----------------------")
+        self.logger.info("--------------------------------------------")
         self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, port)
         self.logger.info("\tARP")
         self.logger.info("\t\tSrc  IP: %s", src_ip)
         self.logger.info("\t\tDest IP: %s", dst_ip)
         self.logger.info("\t\tSrc  MAC: %s", src_mac)
         self.logger.info("\t\tDest MAC: %s", dst_mac)
+        self.logger.info("\tNOT IPV4")
+        self.logger.info("\tNOT IPV6")
+        self.logger.info("\tETH")
+        self.logger.info("\t\tFrom MAC: %s", scr)
+        self.logger.info("\t\tTo   MAC: %s", dst)
+        self.logger.info("\tController Switch (OF)")
+        self.logger.info("\t\tAddress, Port: ('%s', %s)", dst, src)
         
         self.packet_count += 1
