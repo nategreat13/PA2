@@ -22,6 +22,13 @@ class monitor(app_manager.RyuApp):
         
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
+        
+        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+        self.logger.info("--------------------------------------------")
+        self.logger.info("%s", pkt_ipv4)
+        self.logger.info("--------------------------------------------")
+        
+        
         pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
             self.parse_arp(pkt_arp, msg, pkt)
