@@ -49,6 +49,5 @@ class monitor(app_manager.RyuApp):
             self.logger.info("\t\tDest IP: %s", dst_ip)
             self.logger.info("\t\tSrc  MAC: %s", src_mac)
             self.logger.info("\t\tDest MAC: %s", dst_mac)
-        
-
-        self.packet_count += 1
+            
+            self.packet_count += 1
