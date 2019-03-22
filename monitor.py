@@ -35,37 +35,39 @@ class monitor(app_manager.RyuApp):
             return
 
     def parse_arp(self, pkt_arp, msg, pkt):
-        src_ip = pkt_arp.src_ip
-        dst_ip = pkt_arp.dst_ip
-        src_mac = pkt_arp.src_mac
-        dst_mac = pkt_arp.dst_mac
-        
         eth = pkt.get_protocol(ethernet.ethernet)
-        dst = eth.dst
-        src = eth.src
         
         datapath = msg.datapath
         address, port = msg.datapath.address
         
-        port = msg.match['in_port']
-        
         self.logger.info("--------------------------------------------")
-        self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, port)
+        self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, msg.match['in_port'])
         self.logger.info("\tARP")
-        self.logger.info("\t\tSrc  IP: %s", src_ip)
-        self.logger.info("\t\tDest IP: %s", dst_ip)
-        self.logger.info("\t\tSrc  MAC: %s", src_mac)
-        self.logger.info("\t\tDest MAC: %s", dst_mac)
+        self.logger.info("\t\tSrc  IP: %s", pkt_arp.src_ip)
+        self.logger.info("\t\tDest IP: %s", pkt_arp.dst_ip)
+        self.logger.info("\t\tSrc  MAC: %s", pkt_arp.src_mac)
+        self.logger.info("\t\tDest MAC: %s", pkt_arp.dst_mac)
         self.logger.info("\tNOT IPV4")
         self.logger.info("\tNOT IPV6")
         self.logger.info("\tETH")
-        self.logger.info("\t\tFrom MAC: %s", src)
-        self.logger.info("\t\tTo   MAC: %s", dst)
+        self.logger.info("\t\tFrom MAC: %s", eth.src)
+        self.logger.info("\t\tTo   MAC: %s", eth.dst)
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
         
         self.packet_count += 1
     
     def parse_icmp(self, pkt_icmp, msg, pkt):
-        print("HI")
+        self.logger.info("--------------------------------------------")
+        self.logger.info("%s", pkt_icmp)
+        self.logger.info("--------------------------------------------")
+#        self.logger.info("Packet ( %s) Received on Port(%s) Eth PING", self.packet_count, msg.match['in_port'])
+#        self.logger.info("\tPING")
+#        self.logger.info("\tIPV4")
+#        self.logger.info("\t\tCheck Sum: %s", pkt_arp.src_ip)
+#        self.logger.info("\t\tFrom IP: %s", pkt_arp.dst_ip)
+#        self.logger.info("\t\tTo   IP: %s", pkt_arp.src_mac)
+#        self.logger.info("\t\tLength: %s", pkt_arp.dst_mac)
+
+        self.packet_count += 1
 
