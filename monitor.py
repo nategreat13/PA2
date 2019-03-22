@@ -59,12 +59,12 @@ class monitor(app_manager.RyuApp):
     
     def parse_icmp(self, pkt_icmp, msg, pkt):
         self.logger.info("--------------------------------------------")
-        self.logger.info("%s", pkt_icmp)
+        self.logger.info("%s", pkt)
         self.logger.info("--------------------------------------------")
 #        self.logger.info("Packet ( %s) Received on Port(%s) Eth PING", self.packet_count, msg.match['in_port'])
 #        self.logger.info("\tPING")
 #        self.logger.info("\tIPV4")
-#        self.logger.info("\t\tCheck Sum: %s", pkt_arp.src_ip)
+#        self.logger.info("\t\tCheck Sum: %s", pkt_icmp.csum)
 #        self.logger.info("\t\tFrom IP: %s", pkt_arp.dst_ip)
 #        self.logger.info("\t\tTo   IP: %s", pkt_arp.src_mac)
 #        self.logger.info("\t\tLength: %s", pkt_arp.dst_mac)
