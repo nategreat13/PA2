@@ -35,7 +35,7 @@ class monitor(app_manager.RyuApp):
             return
 
     def parse_arp(self, pkt_arp, msg, pkt):
-        eth = pkt.get_protocol(ethernet.ethernet)
+        pkt_eth = pkt.get_protocol(ethernet.ethernet)
         
         datapath = msg.datapath
         address, port = msg.datapath.address
@@ -50,24 +50,34 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\tNOT IPV4")
         self.logger.info("\tNOT IPV6")
         self.logger.info("\tETH")
-        self.logger.info("\t\tFrom MAC: %s", eth.src)
-        self.logger.info("\t\tTo   MAC: %s", eth.dst)
+        self.logger.info("\t\tFrom MAC: %s", pkt_eth.src)
+        self.logger.info("\t\tTo   MAC: %s", pkt_eth.dst)
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
         
         self.packet_count += 1
     
     def parse_icmp(self, pkt_icmp, msg, pkt):
+        pkt_eth = pkt.get_protocol(ethernet.ethernet)
+        
+        datapath = msg.datapath
+        address, port = msg.datapath.address
+        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+        
         self.logger.info("--------------------------------------------")
-        self.logger.info("%s", pkt)
-        self.logger.info("--------------------------------------------")
-#        self.logger.info("Packet ( %s) Received on Port(%s) Eth PING", self.packet_count, msg.match['in_port'])
-#        self.logger.info("\tPING")
-#        self.logger.info("\tIPV4")
-#        self.logger.info("\t\tCheck Sum: %s", pkt_icmp.csum)
-#        self.logger.info("\t\tFrom IP: %s", pkt_arp.dst_ip)
-#        self.logger.info("\t\tTo   IP: %s", pkt_arp.src_mac)
-#        self.logger.info("\t\tLength: %s", pkt_arp.dst_mac)
+        self.logger.info("Packet ( %s) Received on Port(%s) Eth PING", self.packet_count, msg.match['in_port'])
+        self.logger.info("\tPING")
+        self.logger.info("\tIPV4")
+        self.logger.info("\t\tCheck Sum: %s", pkt_ipv4.csum)
+        self.logger.info("\t\tFrom IP: %s", pkt_ipv4.src)
+        self.logger.info("\t\tTo   IP: %s", pkt_ipv4.dst)
+        self.logger.info("\t\tLength: %s", pkt_ipv4.total_length)
+        self.logger.info("\tNot IPV6")
+        self.logger.info("\tETH")
+        self.logger.info("\t\tFrom MAC: %s", pkt_eth.src)
+        self.logger.info("\t\tTo   MAC: %s", pkt_eth.dst)
+        self.logger.info("\tController Switch (OF)")
+        self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
 
         self.packet_count += 1
 
