@@ -25,15 +25,13 @@ class monitor(app_manager.RyuApp):
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
         
-        pkt_icmp = pkt.get_protocol(icmp.icmp)
-        self.logger.info("--------------------------------------------")
-        self.logger.info("%s", pkt_icmp)
-        self.logger.info("--------------------------------------------")
-        
         pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
             self.parse_arp(pkt_arp, msg, pkt)
             return
+        pkt_icmp = pkt.get_protocol(icmp.icmp)
+        if pkt_icmp:
+            self.parse_icmp(pkt_icmp, msg, pkt)
         
     def parse_arp(self, pkt_arp, msg, pkt):
         src_ip = pkt_arp.src_ip
@@ -46,7 +44,10 @@ class monitor(app_manager.RyuApp):
         src = eth.src
         
         datapath = msg.datapath
+        address, port = msg.datapath.address
+        
         port = msg.match['in_port']
+        
         self.logger.info("--------------------------------------------")
         self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, port)
         self.logger.info("\tARP")
@@ -60,6 +61,9 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\t\tFrom MAC: %s", src)
         self.logger.info("\t\tTo   MAC: %s", dst)
         self.logger.info("\tController Switch (OF)")
-        self.logger.info("\t\tAddress, Port: ('%s', %s)", dst, src)
+        self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
         
         self.packet_count += 1
+    
+    def parse_icmp(self, pkt_icmp, msg, pkt):
+
