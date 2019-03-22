@@ -1,3 +1,9 @@
+'''
+    Author: Nathan Gygi
+    u0773016
+    March 22, 2019
+'''
+
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
@@ -11,8 +17,8 @@ from ryu.lib.packet import icmp
 from ryu.lib.packet import ether_types
 
 '''
-A simple controller that intercepts ARP and PING
-messages and prints out valuable information.
+    A simple controller that intercepts ARP and PING
+    messages and prints out valuable information.
 '''
 class monitor(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -22,7 +28,7 @@ class monitor(app_manager.RyuApp):
         self.packet_count = 1 # Counter for the packet number
     
     '''
-    Handles packet in events
+        Handles packet in events
     '''
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
@@ -47,7 +53,7 @@ class monitor(app_manager.RyuApp):
             return
 
     '''
-    Parses an arp packet and prints important information
+        Parses an arp packet and prints important information
     '''
     def parse_arp(self, pkt_arp, msg, pkt):
         pkt_eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
@@ -72,7 +78,7 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
     
     '''
-    Parses an ICMP packet and prints important information
+        Parses an ICMP packet and prints important information
     '''
     def parse_icmp(self, pkt_icmp, msg, pkt):
         pkt_eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
