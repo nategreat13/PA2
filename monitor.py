@@ -66,4 +66,5 @@ class monitor(app_manager.RyuApp):
         self.packet_count += 1
     
     def parse_icmp(self, pkt_icmp, msg, pkt):
+        print("HI")
 
