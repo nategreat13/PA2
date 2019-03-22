@@ -30,8 +30,9 @@ class monitor(app_manager.RyuApp):
             self.parse_arp(pkt_arp, msg, pkt)
             return
         pkt_icmp = pkt.get_protocol(icmp.icmp)
-#        if pkt_icmp:
-#            self.parse_icmp(pkt_icmp, msg, pkt)
+        if pkt_icmp:
+            self.parse_icmp(pkt_icmp, msg, pkt)
+            return
 
     def parse_arp(self, pkt_arp, msg, pkt):
         src_ip = pkt_arp.src_ip
