@@ -10,13 +10,20 @@ from ryu.lib.packet import ipv4
 from ryu.lib.packet import icmp
 from ryu.lib.packet import ether_types
 
+'''
+A simple controller that intercepts ARP and PING
+messages and prints out valuable information.
+'''
 class monitor(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     
     def __init__(self, *args, **kwargs):
         super(monitor, self).__init__(*args, **kwargs)
-        self.packet_count = 1
+        self.packet_count = 1 # Counter for the packet number
     
+    '''
+    Handles packet in events
+    '''
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
         # Get message
@@ -25,21 +32,30 @@ class monitor(app_manager.RyuApp):
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
         
+        # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
             self.parse_arp(pkt_arp, msg, pkt)
+            self.packet_count += 1
             return
+        
+        # Get the ICMP packet and parse it if it exists
         pkt_icmp = pkt.get_protocol(icmp.icmp)
         if pkt_icmp:
             self.parse_icmp(pkt_icmp, msg, pkt)
+            self.packet_count += 1
             return
 
+    '''
+    Parses an arp packet and prints important information
+    '''
     def parse_arp(self, pkt_arp, msg, pkt):
-        pkt_eth = pkt.get_protocol(ethernet.ethernet)
+        pkt_eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
         
         datapath = msg.datapath
-        address, port = msg.datapath.address
+        address, port = msg.datapath.address # Get the switch address and port
         
+        # Print out important information
         self.logger.info("--------------------------------------------")
         self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, msg.match['in_port'])
         self.logger.info("\tARP")
@@ -54,16 +70,19 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\t\tTo   MAC: %s", pkt_eth.dst)
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
-        
-        self.packet_count += 1
     
+    '''
+    Parses an ICMP packet and prints important information
+    '''
     def parse_icmp(self, pkt_icmp, msg, pkt):
-        pkt_eth = pkt.get_protocol(ethernet.ethernet)
+        pkt_eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
         
         datapath = msg.datapath
-        address, port = msg.datapath.address
-        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+        address, port = msg.datapath.address # Get the switch address and port
         
+        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4) # Get the ipv4 packet if it exists
+        
+        # Print out important information
         self.logger.info("--------------------------------------------")
         self.logger.info("Packet ( %s) Received on Port(%s) Eth PING", self.packet_count, msg.match['in_port'])
         self.logger.info("\tPING")
@@ -78,6 +97,4 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\t\tTo   MAC: %s", pkt_eth.dst)
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
-
-        self.packet_count += 1
 
