@@ -32,7 +32,7 @@ class monitor(app_manager.RyuApp):
         pkt_icmp = pkt.get_protocol(icmp.icmp)
 #        if pkt_icmp:
 #            self.parse_icmp(pkt_icmp, msg, pkt)
-        
+
     def parse_arp(self, pkt_arp, msg, pkt):
         src_ip = pkt_arp.src_ip
         dst_ip = pkt_arp.dst_ip
@@ -65,6 +65,6 @@ class monitor(app_manager.RyuApp):
         
         self.packet_count += 1
     
-#    def parse_icmp(self, pkt_icmp, msg, pkt):
-#        print("HI")
+    def parse_icmp(self, pkt_icmp, msg, pkt):
+        print("HI")
 
