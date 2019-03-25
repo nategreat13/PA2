@@ -102,8 +102,8 @@ class monitor(app_manager.RyuApp):
             self.h5count += 1
 
         e = ethernet.ethernet(dst=dst_mac.src=pkt_arp.src_mac,ethertype=ether.ETH_TYPE_ARP)
-        a = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
-                    dst_mac=dst_mac, dst_ip=pkt_arp.dst_ip)
+#        a = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
+#                    dst_mac=dst_mac, dst_ip=pkt_arp.dst_ip)
 #        p = packet.Packet()
 #        p.add_protocol(e)
 #        p.add_protocol(a)
