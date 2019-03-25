@@ -109,7 +109,7 @@ class monitor(app_manager.RyuApp):
         p.add_protocol(e)
         p.add_protocol(a)
         p.serialize()
-        print repr(p.data)
+        print("%s", p)
 
     '''
         Parses an ICMP packet and prints important information
