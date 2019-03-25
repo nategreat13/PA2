@@ -15,7 +15,7 @@ from ryu.lib.packet import arp
 from ryu.lib.packet import ipv4
 from ryu.lib.packet import icmp
 from ryu.lib.packet import ether_types
-from ryu import cfg
+#from ryu import cfg
 
 '''
     A simple controller that intercepts ARP and PING
@@ -26,29 +26,19 @@ class monitor(app_manager.RyuApp):
     
     def __init__(self, *args, **kwargs):
         super(monitor, self).__init__(*args, **kwargs)
-        CONF = cfg.CONF
-        print("!!!!!!!!!")
-        CONF.register_opts([
-                        cfg.IntOpt('param1_int', default=0, help = ('The ultimate answer')),
-                        cfg.StrOpt('param2_str', default='default', help = ('A string')),
-                        cfg.ListOpt('param3_list', default = None, help = ('A list of numbers')),
-                        cfg.FloatOpt('param4_float', default = 0.0, help = ('Pi? Yummy.'))])
-        
-        print 'param1_int = {}'.format(CONF.param1_int))
-        print 'param2_str = {}'.format(CONF.param2_str))
-        print 'param3_list = {}'.format(CONF.param3_list))
-        print 'param4_float = {}'.format(CONF.param4_float))
-
-#CONF.register_opts([
+#        CONF = cfg.CONF
+#        CONF.register_opts([
 #            cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
 #            cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
 #            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
-#        print("---------")
-#        self.packet_count = 1 # Counter for the packet number
-#
+
 #        print 'front_end_testers = {}'.format(CONF.front_end_testers))
 #        print 'back_end_testers = {}'.format(CONF.back_end_testers))
 #        print 'virtual_ip = {}'.format(CONF.virtual_ip))
+        self.packet_count = 1 # Counter for the packet number
+        
+        self.h5count = 0
+        self.h6count = 0
 
     '''
         Handles packet in events
@@ -99,6 +89,14 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\t\tTo   MAC: %s", pkt_eth.dst)
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
+    
+        if h5count > h6count:
+            print("Send to h6")
+            h6count += 1
+        else:
+            print("Send to h5")
+            h5count += 1
+    
 
     '''
         Parses an ICMP packet and prints important information
