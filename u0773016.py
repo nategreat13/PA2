@@ -15,6 +15,7 @@ from ryu.lib.packet import arp
 from ryu.lib.packet import ipv4
 from ryu.lib.packet import icmp
 from ryu.lib.packet import ether_types
+from ryu import cfg
 
 '''
     A simple controller that intercepts ARP and PING
@@ -26,6 +27,15 @@ class monitor(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(monitor, self).__init__(*args, **kwargs)
         self.packet_count = 1 # Counter for the packet number
+        CONF = cfg.CONF
+        CONF.register_opts([
+            cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
+            cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
+            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))
+
+        print 'front_end_testers = {}'.format(CONF.front_end_testers))
+        print 'back_end_testers = {}'.format(CONF.back_end_testers))
+        print 'virtual_ip = {}'.format(CONF.virtual_ip))
     
     '''
         Handles packet in events
