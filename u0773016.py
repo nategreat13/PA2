@@ -90,12 +90,12 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
     
-        if h5count > h6count:
+        if self.h5count > self.h6count:
             print("Send to h6")
-            h6count += 1
+            self.h6count += 1
         else:
             print("Send to h5")
-            h5count += 1
+            self.h5count += 1
     
 
     '''
