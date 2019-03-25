@@ -31,13 +31,13 @@ class monitor(app_manager.RyuApp):
         CONF.register_opts([
             cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
             cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
-            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))
+            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
         print("---------")
         self.packet_count = 1 # Counter for the packet number
-#
-#        print 'front_end_testers = {}'.format(CONF.front_end_testers))
-#        print 'back_end_testers = {}'.format(CONF.back_end_testers))
-#        print 'virtual_ip = {}'.format(CONF.virtual_ip))
+
+        print 'front_end_testers = {}'.format(CONF.front_end_testers))
+        print 'back_end_testers = {}'.format(CONF.back_end_testers))
+        print 'virtual_ip = {}'.format(CONF.virtual_ip))
 
     '''
         Handles packet in events
