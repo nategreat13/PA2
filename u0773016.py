@@ -29,15 +29,26 @@ class monitor(app_manager.RyuApp):
         CONF = cfg.CONF
         print("!!!!!!!!!")
         CONF.register_opts([
-            cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
-            cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
-            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
-        print("---------")
-        self.packet_count = 1 # Counter for the packet number
+                        cfg.IntOpt('param1_int', default=0, help = ('The ultimate answer')),
+                        cfg.StrOpt('param2_str', default='default', help = ('A string')),
+                        cfg.ListOpt('param3_list', default = None, help = ('A list of numbers')),
+                        cfg.FloatOpt('param4_float', default = 0.0, help = ('Pi? Yummy.'))])
+        
+        print 'param1_int = {}'.format(CONF.param1_int))
+        print 'param2_str = {}'.format(CONF.param2_str))
+        print 'param3_list = {}'.format(CONF.param3_list))
+        print 'param4_float = {}'.format(CONF.param4_float))
 
-        print 'front_end_testers = {}'.format(CONF.front_end_testers))
-        print 'back_end_testers = {}'.format(CONF.back_end_testers))
-        print 'virtual_ip = {}'.format(CONF.virtual_ip))
+#CONF.register_opts([
+#            cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
+#            cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
+#            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
+#        print("---------")
+#        self.packet_count = 1 # Counter for the packet number
+#
+#        print 'front_end_testers = {}'.format(CONF.front_end_testers))
+#        print 'back_end_testers = {}'.format(CONF.back_end_testers))
+#        print 'virtual_ip = {}'.format(CONF.virtual_ip))
 
     '''
         Handles packet in events
