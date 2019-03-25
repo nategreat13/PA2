@@ -26,7 +26,6 @@ class monitor(app_manager.RyuApp):
     
     def __init__(self, *args, **kwargs):
         super(monitor, self).__init__(*args, **kwargs)
-        self.packet_count = 1 # Counter for the packet number
         CONF = cfg.CONF
         print("!!!!!!!!!")
         CONF.register_opts([
@@ -34,6 +33,7 @@ class monitor(app_manager.RyuApp):
             cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
             cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))
         print("---------")
+        self.packet_count = 1 # Counter for the packet number
 #
 #        print 'front_end_testers = {}'.format(CONF.front_end_testers))
 #        print 'back_end_testers = {}'.format(CONF.back_end_testers))
