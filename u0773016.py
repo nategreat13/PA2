@@ -30,19 +30,21 @@ class monitor(app_manager.RyuApp):
         CONF = cfg.CONF
         CONF.register_opts([
             cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
-            cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
+            cfg.IntOpt('back_end_servers', default=0, help = ('Number of Back End Machines')),
             cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
 
         num_front_end = CONF.front_end_testers
-        num_back_end = CONF.back_end_testers
+        num_back_end = CONF.back_end_servers
         virtual_ip = CONF.virtual_ip
         
+        print(virtual_ip)
         print(num_front_end)
         print(num_back_end)
         
         back_end_physical_addresses = []
         back_end_connection_counts = []
         for i in range(num_back_end):
+            print(i)
             back_end_connection_counts.append(0)
             back_end_physical_addresses.append('10.0.0.' + str(i + num_front_end + 1))
         print(back_end_physical_addresses)
