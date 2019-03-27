@@ -169,7 +169,9 @@ class monitor(app_manager.RyuApp):
         
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
         mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
+        self.logger.info("--------------------")
         self.logger.info("Adding Flow: %s",mod)
+        self.logger.info("--------------------")
         datapath.send_msg(mod)
 
 
