@@ -156,7 +156,7 @@ class monitor(app_manager.RyuApp):
 
         # Add the flow from the back end to the front end
         match = parser.OFPMatch(in_port=back_end_port,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
-            actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
+        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
         self.add_flow(datapath, 1, match, actions)
 
 
