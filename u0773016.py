@@ -79,6 +79,10 @@ class monitor(app_manager.RyuApp):
 
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
+        
+        self.logger.info("--------------------")
+        self.logger.info("Packet in: %s",pkt)
+        self.logger.info("--------------------")
 
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
@@ -113,7 +117,7 @@ class monitor(app_manager.RyuApp):
         if pkt_arp.dst_ip != self.virtual_ip:
             return
         
-        # If the packet came from a back end server, then don't do anything
+        # If the packet came from a back end server, update it's
         for i in range(self.num_back_end):
             if src == self.back_end_mac_addresses[i]:
                 return
