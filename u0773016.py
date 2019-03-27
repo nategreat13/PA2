@@ -67,19 +67,19 @@ class monitor(app_manager.RyuApp):
         self.logger.info("packet-in %s" % (pkt,))
 
         # Get the arp packet and parse it if it exists
-        pkt_arp = pkt.get_protocol(arp.arp)
+        arp = pkt.get_protocol(arp.arp)
         
         
-        if pkt_arp:
-            self.parse_arp(pkt_arp, msg, pkt)
+        if arp:
+            self.parse_arp(arp, msg, pkt)
             self.packet_count += 1
             return
 
     '''
         Parses an arp packet and prints important information
     '''
-    def parse_arp(self, pkt_arp, msg, pkt):
-        pkt_eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
+    def parse_arp(self, arp, msg, pkt):
+        eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
         
         # Get important information from the msg and eth packet
         in_port = msg.match['in_port']
@@ -110,9 +110,9 @@ class monitor(app_manager.RyuApp):
         dst_ip = self.back_end_physical_addresses[index]
 
         # Create the eth and arp packets and combine them into one packet
-        eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
-        arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=dst_mac,src_ip=self.virtual_ip,
-                    dst_mac=pkt_arp.src_mac, dst_ip=pkt_arp.src_ip)
+        eth_pkt = ethernet.ethernet(dst=arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
+        arp_pkt = arp.arp(hwtype=arp.hwtype,proto=arp.proto,hlen=arp.hlen,plen=arp.plen,opcode=arp.opcode,src_mac=dst_mac,src_ip=self.virtual_ip,
+                    dst_mac=arp.src_mac, dst_ip=arp.src_ip)
         p = packet.Packet()
         p.add_protocol(eth_pkt)
         p.add_protocol(arp_pkt)
