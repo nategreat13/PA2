@@ -53,7 +53,6 @@ class monitor(app_manager.RyuApp):
 
         self.next_server_address_index = 0 # Keep track of which back end server to assign the host to
         self.packet_count = 1 # Counter for the packet number
-        self.mac_to_port = {}
 
     '''
         Handles packet in events
@@ -88,13 +87,6 @@ class monitor(app_manager.RyuApp):
         parser = datapath.ofproto_parser
         dst = eth.dst
         src = eth.src
-    
-#        if src in self.mac_to_port[dpid]:
-#            return
-        
-        # Learn the Mac and Port
-        self.mac_to_port.setdefault(dpid, {})
-        self.mac_to_port[dpid][src] = in_port
 
         # Get index of next server to use and increment its count
         index = self.next_server_address_index
@@ -156,6 +148,23 @@ class monitor(app_manager.RyuApp):
         
         self.logger.info("Packet Out To Back End: %s",p)
         datapath.send_msg(out)
+
+        match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
+        actions = [parser.OFPActionOutput(back_end_port)]
+        self.add_flow(datapath, 1, match, actions)
+
+        match = parser.OFPMatch(in_port=back_end_port, eth_dst=src)
+        actions = [parser.OFPActionOutput(in_port)]
+        self.add_flow(datapath, 1, match, actions)
+
+                
+    def add_flow(self, datapath, priority, match, actions):
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+        
+        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+        mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
+        datapath.send_msg(mod)
 
 
         
