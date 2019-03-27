@@ -77,6 +77,11 @@ class monitor(app_manager.RyuApp):
         Parses an arp packet and prints important information
     '''
     def parse_arp(self, pkt_arp, msg, pkt):
+        
+        self.logger.info("--------------------")
+        self.logger.info("New Arp Packet: %s",pkt_arp)
+        self.logger.info("--------------------")
+        
         eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
         
         # Get important information from the msg and eth packet
@@ -168,9 +173,9 @@ class monitor(app_manager.RyuApp):
         
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
         mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
-        self.logger.info("--------------------")
-        self.logger.info("Adding Flow: %s",mod)
-        self.logger.info("--------------------")
+#        self.logger.info("--------------------")
+#        self.logger.info("Adding Flow: %s",mod)
+#        self.logger.info("--------------------")
         datapath.send_msg(mod)
 
 
