@@ -52,8 +52,7 @@ class monitor(app_manager.RyuApp):
 #        print(self.back_end_physical_addresses)
 #        print(self.back_end_mac_addresses)
 
-        self.next_server_address_index = 0
-        
+        self.next_server_address_index = 0 # Keep track of which back end server to assign the host to
         self.packet_count = 1 # Counter for the packet number
 
     '''
@@ -132,4 +131,6 @@ class monitor(app_manager.RyuApp):
                                   in_port=ofproto.OFPP_CONTROLLER,
                                   actions=actions,
                                   data=data)
+        print("Sending")
         datapath.send_msg(out)
+        print("Sent")
