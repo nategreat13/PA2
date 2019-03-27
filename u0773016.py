@@ -50,9 +50,9 @@ class monitor(app_manager.RyuApp):
             self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
             if server_number < 16:
                 print('here')
-                self.back_end_mac_addresses.append('00:00:00:00:00:0' + str(int(server_number,16)))
+                self.back_end_mac_addresses.append('00:00:00:00:00:0' + str(int(str(server_number),16)))
             else:
-                self.back_end_mac_addresses.append('00:00:00:00:00:' + str(int(server_number,16)))
+                self.back_end_mac_addresses.append('00:00:00:00:00:' + str(int(str(server_number),16)))
 
         print(self.back_end_physical_addresses)
         print(self.back_end_mac_addresses)
