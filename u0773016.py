@@ -37,24 +37,24 @@ class monitor(app_manager.RyuApp):
         self.num_back_end = CONF.back_end_servers
         self.virtual_ip = CONF.virtual_ip
         
-        print(virtual_ip)
-        print(num_front_end)
-        print(num_back_end)
+        print(self.virtual_ip)
+        print(self.num_front_end)
+        print(self.num_back_end)
         
         self.back_end_connection_counts = []
         self.back_end_physical_addresses = []
         self.back_end_mac_addresses = []
         for i in range(num_back_end):
             print(i)
-            back_end_connection_counts.append(0)
-            server_number = i + num_front_end + 1
-            back_end_physical_addresses.append('10.0.0.' + str(server_number))
+            self.back_end_connection_counts.append(0)
+            self.server_number = i + num_front_end + 1
+            self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
             
 #            if server_number < 10:
 #                back_end_connection_counts.append('00:00:00:00:00:0' + str(server_number))
 #            else:
 #                back_end_connection_counts.append('00:00:00:00:00:' + str(server_number))
-        
+
         print(back_end_physical_addresses)
         
         self.next_server_address_index = 0
