@@ -65,6 +65,7 @@ class monitor(app_manager.RyuApp):
 
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
+        self.logger.info("-----------------------")
         self.logger.info("packet-in %s" % (pkt,))
 
         # Get the arp packet and parse it if it exists
@@ -123,7 +124,8 @@ class monitor(app_manager.RyuApp):
         
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
-        self.logger.info("packet-out %s" % (p,))
+        self.logger.info("\npacket-out %s" % (p,))
+        self.logger.info("-----------------------")
         data = p.data
         actions = [parser.OFPActionOutput(port=in_port)]
         out = parser.OFPPacketOut(datapath=datapath,
