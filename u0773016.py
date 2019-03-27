@@ -47,7 +47,7 @@ class monitor(app_manager.RyuApp):
         for i in range(self.num_back_end):
             print(i)
             self.back_end_connection_counts.append(0)
-            self.server_number = i + num_front_end + 1
+            server_number = i + self.num_front_end + 1
             self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
             
 #            if server_number < 10:
