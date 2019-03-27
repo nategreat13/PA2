@@ -50,12 +50,13 @@ class monitor(app_manager.RyuApp):
             server_number = i + self.num_front_end + 1
             self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
             
-#            if server_number < 10:
-#                back_end_connection_counts.append('00:00:00:00:00:0' + str(server_number))
-#            else:
-#                back_end_connection_counts.append('00:00:00:00:00:' + str(server_number))
+            if server_number < 10:
+                self.back_end_connection_counts.append('00:00:00:00:00:0' + str(server_number))
+            else:
+               self. back_end_connection_counts.append('00:00:00:00:00:' + str(server_number))
 
         print(self.back_end_physical_addresses)
+        prinit(self.back_end_mac_addresses)
         
         self.next_server_address_index = 0
         
