@@ -50,6 +50,8 @@ class monitor(app_manager.RyuApp):
             else:
                 self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
             self.back_end_ports.append(server_number)
+                
+        self.front_end_macs_served = []
 
         self.next_server_address_index = 0 # Keep track of which back end server to assign the host to
         self.packet_count = 1 # Counter for the packet number
@@ -96,8 +98,13 @@ class monitor(app_manager.RyuApp):
         for i in range(self.num_back_end):
             if src == self.back_end_mac_addresses[i]:
                 return
+        for j in range(len(self.front_end_macs_served)):
+            if src == self.front_end_macs_served[j]:
+                return
         if pkt_arp.dst_ip != self.virtual_ip:
             return
+        
+        self.front_end_macs_served.append(src)
 
         # Get index of next server to use and increment its count
         index = self.next_server_address_index
