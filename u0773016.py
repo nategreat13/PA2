@@ -37,10 +37,6 @@ class monitor(app_manager.RyuApp):
         self.num_back_end = CONF.back_end_servers
         self.virtual_ip = CONF.virtual_ip
         
-        print(self.virtual_ip)
-        print(self.num_front_end)
-        print(self.num_back_end)
-        
         self.back_end_connection_counts = []
         self.back_end_physical_addresses = []
         self.back_end_mac_addresses = []
@@ -49,7 +45,6 @@ class monitor(app_manager.RyuApp):
             server_number = i + self.num_front_end + 1
             self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
             if server_number < 16:
-                print('here')
                 self.back_end_mac_addresses.append('00:00:00:00:00:0' + hex(server_number)[2:])
             else:
                 self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
@@ -104,24 +99,17 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
         
-#        # Get index of next server to use
-#        dst_mac = self.next_server_address_index
-#
-#        self.next_server_address_index += 1
-#        if self.next_server_address_index == self.num_back_end:
-#            self.next_server_address_index = 0
-#
-#
-#        dst_mac =
-#        if self.h5count > self.h6count:
-#            print("Send to h6")
-#            dst_mac = '00:00:00:00:00:06'
-#            self.h6count += 1
-#        else:
-#            print("Send to h5")
-#            dst_mac = '00:00:00:00:00:05'
-#            self.h5count += 1
-#
+        # Get index of next server to use
+        dst_mac = self.next_server_address_index
+        self.back_end_connection_counts[dst_mac] += 1
+
+        self.next_server_address_index += 1
+        if self.next_server_address_index == self.num_back_end:
+            self.next_server_address_index = 0
+
+        dst_mac = self.back_end_mac_addresses[self.next_server_address_index]
+        dst_ip = self.back_end_physical_addresses[self.next_server_address_index]
+
 #        e = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
 #        a = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
 #                    dst_mac=dst_mac, dst_ip=pkt_arp.dst_ip)
