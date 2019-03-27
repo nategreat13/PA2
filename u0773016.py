@@ -115,16 +115,16 @@ class monitor(app_manager.RyuApp):
         eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
         arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
                     dst_mac=dst_mac, dst_ip=dst_ip)
-        packet = packet.Packet()
-        packet.add_protocol(eth_pkt)
-        packet.add_protocol(arp_pkt)
-        packet.serialize()
+        p = packet.Packet()
+        p.add_protocol(eth_pkt)
+        p.add_protocol(arp_pkt)
+        p.serialize()
 
         
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
-        self.logger.info("packet-out %s" % (packet,))
-        data = packet.data
+        self.logger.info("packet-out %s" % (p,))
+        data = p.data
         actions = [parser.OFPActionOutput(port=in_port)]
         out = parser.OFPPacketOut(datapath=datapath,
                                   buffer_id=ofproto.OFP_NO_BUFFER,
