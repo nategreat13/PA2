@@ -79,6 +79,8 @@ class monitor(app_manager.RyuApp):
     '''
     def parse_arp(self, pkt_arp, msg, pkt):
         pkt_eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
+        
+        in_port = msg.match['in_port']
 
         datapath = msg.datapath
         address, port = msg.datapath.address # Get the switch address and port
@@ -110,11 +112,23 @@ class monitor(app_manager.RyuApp):
         dst_mac = self.back_end_mac_addresses[index]
         dst_ip = self.back_end_physical_addresses[index]
 
-        e = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
-        a = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
+        eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
+        arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
                     dst_mac=dst_mac, dst_ip=dst_ip)
-        p = packet.Packet()
-        p.add_protocol(e)
-        p.add_protocol(a)
-        p.serialize()
-        print("%s", p)
+        packet = packet.Packet()
+        packet.add_protocol(eth_pkt)
+        packet.add_protocol(arp_pkt)
+        packet.serialize()
+
+        
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+        self.logger.info("packet-out %s" % (packet,))
+        data = packet.data
+        actions = [parser.OFPActionOutput(port=in_port)]
+        out = parser.OFPPacketOut(datapath=datapath,
+                                  buffer_id=ofproto.OFP_NO_BUFFER,
+                                  in_port=ofproto.OFPP_CONTROLLER,
+                                  actions=actions,
+                                  data=data)
+        datapath.send_msg(out)
