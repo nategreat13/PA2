@@ -88,6 +88,9 @@ class monitor(app_manager.RyuApp):
         parser = datapath.ofproto_parser
         dst = eth.dst
         src = eth.src
+    
+        if src in self.mac_to_port[dpid]:
+            return
         
         # Learn the Mac and Port
         self.mac_to_port.setdefault(dpid, {})
@@ -135,7 +138,7 @@ class monitor(app_manager.RyuApp):
         # host and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
         arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
-                              dst_mac=dst_mac, dst_ip=self.virtual_ip)
+                              dst_mac=dst_mac, dst_ip=dst_ip)
         p = packet.Packet()
         p.add_protocol(eth_pkt)
         p.add_protocol(arp_pkt)
