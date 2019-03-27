@@ -39,6 +39,10 @@ class monitor(app_manager.RyuApp):
         self.num_back_end = CONF.back_end_servers
         self.virtual_ip = CONF.virtual_ip
         
+        print(self.num_front_end)
+        print(self.num_back_end)
+        print(self.virtual_ip)
+        
         self.back_end_connection_counts = []
         self.back_end_physical_addresses = []
         self.back_end_mac_addresses = []
