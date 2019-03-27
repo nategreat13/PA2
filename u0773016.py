@@ -33,28 +33,33 @@ class monitor(app_manager.RyuApp):
             cfg.IntOpt('back_end_servers', default=0, help = ('Number of Back End Machines')),
             cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
 
-        num_front_end = CONF.front_end_testers
-        num_back_end = CONF.back_end_servers
-        virtual_ip = CONF.virtual_ip
+        self.num_front_end = CONF.front_end_testers
+        self.num_back_end = CONF.back_end_servers
+        self.virtual_ip = CONF.virtual_ip
         
         print(virtual_ip)
         print(num_front_end)
         print(num_back_end)
         
-        back_end_physical_addresses = []
-        back_end_connection_counts = []
+        self.back_end_connection_counts = []
+        self.back_end_physical_addresses = []
+        self.back_end_mac_addresses = []
         for i in range(num_back_end):
             print(i)
             back_end_connection_counts.append(0)
-            back_end_physical_addresses.append('10.0.0.' + str(i + num_front_end + 1))
+            server_number = i + num_front_end + 1
+            back_end_physical_addresses.append('10.0.0.' + str(server_number))
+            
+            if server_number < 10:
+                back_end_connection_counts.append('00:00:00:00:00:0' + str(server_number))
+            else:
+                back_end_connection_counts.append('00:00:00:00:00:' + str(server_number))
+        
         print(back_end_physical_addresses)
         
-        
+        self.next_server_address_index = 0
         
         self.packet_count = 1 # Counter for the packet number
-        
-        self.h5count = 0
-        self.h6count = 0
 
     '''
         Handles packet in events
@@ -99,8 +104,15 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
         
-        dst_mac = ''
+        # Get index of next server to use
+        dst_mac = self.next_server_address_index
         
+        self.next_server_address_index += 1
+        if self.next_server_address_index == self.num_back_end:
+            self.next_server_address_index = 0
+        
+        
+        dst_mac =
         if self.h5count > self.h6count:
             print("Send to h6")
             dst_mac = '00:00:00:00:00:06'
