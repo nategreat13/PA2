@@ -43,8 +43,8 @@ class monitor(app_manager.RyuApp):
         back_end_physical_addresses = []
         back_end_connection_counts = []
         for i in range(num_back_end):
-            back_end_connection_counts[i] = 0
-            back_end_physical_addresses[i] = '10.0.0.' + str(i + num_front_end + 1)
+            back_end_connection_counts.append(0)
+            back_end_physical_addresses.append('10.0.0.' + str(i + num_front_end + 1))
         print(back_end_physical_addresses)
         
         
