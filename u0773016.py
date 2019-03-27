@@ -134,32 +134,32 @@ class monitor(app_manager.RyuApp):
 
         # Create the eth and arp packets to send to the back_end
         # host and combine them into one packet
-        eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
-        arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
-                              dst_mac=dst_mac, dst_ip=dst_ip    )
-        p = packet.Packet()
-        p.add_protocol(eth_pkt)
-        p.add_protocol(arp_pkt)
-        p.serialize()
+#        eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
+#        arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
+#                              dst_mac=dst_mac, dst_ip=dst_ip    )
+#        p = packet.Packet()
+#        p.add_protocol(eth_pkt)
+#        p.add_protocol(arp_pkt)
+#        p.serialize()
+#
+#        # Send the packet to the back_end server to update their
+#        # arp table to point to the requesting host
+#        data = p.data
+#        actions = [parser.OFPActionOutput(port=back_end_port)]
+#        out = parser.OFPPacketOut(datapath=datapath,
+#                              buffer_id=ofproto.OFP_NO_BUFFER,
+#                              in_port=ofproto.OFPP_CONTROLLER,
+#                              actions=actions,
+#                              data=data)
+#
+#        datapath.send_msg(out)
 
-        # Send the packet to the back_end server to update their
-        # arp table to point to the requesting host
-        data = p.data
-        actions = [parser.OFPActionOutput(port=back_end_port)]
-        out = parser.OFPPacketOut(datapath=datapath,
-                              buffer_id=ofproto.OFP_NO_BUFFER,
-                              in_port=ofproto.OFPP_CONTROLLER,
-                              actions=actions,
-                              data=data)
-
-        datapath.send_msg(out)
-
-        match = parser.OFPMatch(in_port=in_port, eth_dst=dst_mac)
-        actions = [parser.OFPActionOutput(back_end_port)]
+        match = parser.OFPMatch(in_port=in_port, ipv4_dst=self.virtual_ip)
+        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
         self.add_flow(datapath, 1, match, actions)
 
-        match = parser.OFPMatch(in_port=back_end_port, eth_dst=src)
-        actions = [parser.OFPActionOutput(in_port)]
+        match = parser.OFPMatch(in_port=back_end_port, ipv4_src=dst_ip, ipv4_dst=src_ip)
+        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip) parser.OFPActionOutput(in_port)]
         self.add_flow(datapath, 1, match, actions)
 
                 
