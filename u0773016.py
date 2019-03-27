@@ -113,13 +113,15 @@ class monitor(app_manager.RyuApp):
         if pkt_arp.dst_ip != self.virtual_ip:
             return
         
+        # If the packet came from a back end server, then don't do anything
         for i in range(self.num_back_end):
             if src == self.back_end_mac_addresses[i]:
                 return
 #        for j in range(len(self.front_end_macs_served)):
 #            if src == self.front_end_macs_served[j]:
 #                return
-        
+
+        # Add the front end to the list of front ends served
         self.front_end_macs_served.append(src)
 
         # Get index of next server to use
@@ -132,13 +134,13 @@ class monitor(app_manager.RyuApp):
         if self.next_server_address_index == self.num_back_end:
             self.next_server_address_index = 0
         
-        # Get the actual mac and ip of the backend that will be assigned to the host
+        # Get the actual mac, ip, and port of the backend that will be assigned to the host
         dst_mac = self.back_end_mac_addresses[index]
         dst_ip = self.back_end_physical_addresses[index]
         back_end_port = self.back_end_ports[index]
 
         # Create the eth and arp packets to send to the requesting
-        # host and combine them into one packet
+        # front end and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
         arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=dst_mac,src_ip=self.virtual_ip,
                     dst_mac=pkt_arp.src_mac, dst_ip=pkt_arp.src_ip)
@@ -156,7 +158,6 @@ class monitor(app_manager.RyuApp):
                                   in_port=ofproto.OFPP_CONTROLLER,
                                   actions=actions,
                                   data=data)
-
         datapath.send_msg(out)
 
         # Create the eth and arp packets to send to the back_end
@@ -178,17 +179,24 @@ class monitor(app_manager.RyuApp):
                               in_port=ofproto.OFPP_CONTROLLER,
                               actions=actions,
                               data=data)
-
         datapath.send_msg(out)
 
-        match = parser.OFPMatch(in_port=in_port,ipv4_dst=self.virtual_ip)
-        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
+        # Add the flow from the front end to the back end
+        match = parser.OFPMatch(in_port=in_port,dst_ip=self.virtual_ip)
+        actions = [parser.OFPActionSetField(dst_ip=dst_ip), parser.OFPActionOutput(back_end_port)]
         self.add_flow(datapath, 1, match, actions)
-        match = parser.OFPMatch(in_port=back_end_port,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
-        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
+        
+        # Add the flow from the back end to the front end
+        match = parser.OFPMatch(in_port=back_end_port,src_ip=dst_ip,dst_ip=pkt_arp.src_ip)
+        actions = [parser.OFPActionSetField(src_ip=self.virtual_ip),parser.OFPActionOutput(in_port)]
         self.add_flow(datapath, 1, match, actions)
 
-                
+
+    '''
+        This function adds a flow to the switch in route future traffic
+        through the switch without going through the controller.
+        Much of this logic was found by looking at the simple_switch_13.py file.
+    '''
     def add_flow(self, datapath, priority, match, actions):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
