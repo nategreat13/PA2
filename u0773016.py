@@ -39,7 +39,15 @@ class monitor(app_manager.RyuApp):
         
         print(num_front_end)
         print(num_back_end)
-        print(virtual_ip)
+        
+        back_end_physical_addresses = []
+        back_end_connection_counts = []
+        for i in range(num_back_end):
+            back_end_connection_counts[i] = 0
+            back_end_physical_addresses[i] = '10.0.0.' + str(i + num_front_end + 1)
+        print(back_end_physical_addresses)
+        
+        
         
         self.packet_count = 1 # Counter for the packet number
         
