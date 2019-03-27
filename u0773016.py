@@ -1,7 +1,9 @@
 '''
     Author: Nathan Gygi
     u0773016
-    March 22, 2019
+    University of Utah
+    CS 4480
+    March 27, 2019
 '''
 
 from ryu.base import app_manager
@@ -19,8 +21,7 @@ from ryu.lib.packet import ether_types
 from ryu import cfg
 
 '''
-    A simple controller that intercepts ARP and PING
-    messages and prints out valuable information.
+    UPDATE
 '''
 class monitor(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -28,6 +29,7 @@ class monitor(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(monitor, self).__init__(*args, **kwargs)
         CONF = cfg.CONF
+        print(CONF)
         CONF.register_opts([
             cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
             cfg.IntOpt('back_end_servers', default=0, help = ('Number of Back End Machines')),
