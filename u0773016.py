@@ -50,10 +50,10 @@ class monitor(app_manager.RyuApp):
             server_number = i + num_front_end + 1
             back_end_physical_addresses.append('10.0.0.' + str(server_number))
             
-            if server_number < 10:
-                back_end_connection_counts.append('00:00:00:00:00:0' + str(server_number))
-            else:
-                back_end_connection_counts.append('00:00:00:00:00:' + str(server_number))
+#            if server_number < 10:
+#                back_end_connection_counts.append('00:00:00:00:00:0' + str(server_number))
+#            else:
+#                back_end_connection_counts.append('00:00:00:00:00:' + str(server_number))
         
         print(back_end_physical_addresses)
         
@@ -104,29 +104,29 @@ class monitor(app_manager.RyuApp):
         self.logger.info("\tController Switch (OF)")
         self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
         
-        # Get index of next server to use
-        dst_mac = self.next_server_address_index
-        
-        self.next_server_address_index += 1
-        if self.next_server_address_index == self.num_back_end:
-            self.next_server_address_index = 0
-        
-        
-        dst_mac =
-        if self.h5count > self.h6count:
-            print("Send to h6")
-            dst_mac = '00:00:00:00:00:06'
-            self.h6count += 1
-        else:
-            print("Send to h5")
-            dst_mac = '00:00:00:00:00:05'
-            self.h5count += 1
-
-        e = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
-        a = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
-                    dst_mac=dst_mac, dst_ip=pkt_arp.dst_ip)
-        p = packet.Packet()
-        p.add_protocol(e)
-        p.add_protocol(a)
-        p.serialize()
-        print("%s", p)
+#        # Get index of next server to use
+#        dst_mac = self.next_server_address_index
+#
+#        self.next_server_address_index += 1
+#        if self.next_server_address_index == self.num_back_end:
+#            self.next_server_address_index = 0
+#
+#
+#        dst_mac =
+#        if self.h5count > self.h6count:
+#            print("Send to h6")
+#            dst_mac = '00:00:00:00:00:06'
+#            self.h6count += 1
+#        else:
+#            print("Send to h5")
+#            dst_mac = '00:00:00:00:00:05'
+#            self.h5count += 1
+#
+#        e = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
+#        a = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
+#                    dst_mac=dst_mac, dst_ip=pkt_arp.dst_ip)
+#        p = packet.Packet()
+#        p.add_protocol(e)
+#        p.add_protocol(a)
+#        p.serialize()
+#        print("%s", p)
