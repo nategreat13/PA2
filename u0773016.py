@@ -87,6 +87,12 @@ class monitor(app_manager.RyuApp):
         parser = datapath.ofproto_parser
         dst = eth.dst
         src = eth.src
+        
+        for i in range(self.num_back_end):
+            if src == self.back_end_mac_addresses[i]:
+                return
+        if pkt_arp.dst_ip != self.virtual_ip:
+            return
 
         # Get index of next server to use and increment its count
         index = self.next_server_address_index
