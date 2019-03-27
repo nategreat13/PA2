@@ -154,13 +154,13 @@ class monitor(app_manager.RyuApp):
 #
 #        datapath.send_msg(out)
 
-        match = parser.OFPMatch(in_port=in_port, ipv4_dst=self.virtual_ip)
-        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
-        self.add_flow(datapath, 1, match, actions)
-
-        match = parser.OFPMatch(in_port=back_end_port, ipv4_src=dst_ip, ipv4_dst=src_ip)
-        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip) parser.OFPActionOutput(in_port)]
-        self.add_flow(datapath, 1, match, actions)
+#        match = parser.OFPMatch(in_port=in_port, ipv4_dst=self.virtual_ip)
+#        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
+#        self.add_flow(datapath, 1, match, actions)
+#
+#        match = parser.OFPMatch(in_port=back_end_port, ipv4_src=dst_ip, ipv4_dst=src_ip)
+#        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip) parser.OFPActionOutput(in_port)]
+#        self.add_flow(datapath, 1, match, actions)
 
                 
     def add_flow(self, datapath, priority, match, actions):
