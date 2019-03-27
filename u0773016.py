@@ -80,6 +80,10 @@ class monitor(app_manager.RyuApp):
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
         
+        eth = pkt.get_protocol(ethernet.ethernet)
+        if eth.ethertype != ether_types.ETH_TYPE_ARP:
+            return
+        
         self.logger.info("--------------------")
         self.logger.info("Packet in: %s",pkt)
         self.logger.info("--------------------")
