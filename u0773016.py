@@ -35,25 +35,25 @@ class monitor(app_manager.RyuApp):
             cfg.IntOpt('back_end_servers', default=0, help = ('Number of Back End Machines')),
             cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
 
+        # Get the values from the config file
         self.num_front_end = CONF.front_end_testers
         self.num_back_end = CONF.back_end_servers
         self.virtual_ip = CONF.virtual_ip
         
+        # If num_front_end == 0, assume there was no config file,
+        # and set values to the dafault topology
         if (self.num_front_end == 0):
             self.num_front_end = 4
             self.num_back_end = 2
             self.virtual_ip = '10.0.0.10'
-
-        print(self.num_front_end)
-        print(self.num_back_end)
-        print(self.virtual_ip)
         
-        self.back_end_connection_counts = []
+        # Initiate lists to hold the back end IP addresses, MAC addresses, and ports
         self.back_end_physical_addresses = []
         self.back_end_mac_addresses = []
         self.back_end_ports = []
+        
+        # Fill the lists with the appropriate information for the back ends
         for i in range(self.num_back_end):
-            self.back_end_connection_counts.append(0)
             server_number = i + self.num_front_end + 1
             self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
             if server_number < 16:
@@ -62,10 +62,12 @@ class monitor(app_manager.RyuApp):
                 self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
             self.back_end_ports.append(server_number)
                 
+        # Initiate a list to keep track of Host Mac Addresses
+        # that have already been assigned to back end servers
         self.front_end_macs_served = []
 
-        self.next_server_address_index = 0 # Keep track of which back end server to assign the host to
-        self.packet_count = 1 # Counter for the packet number
+        # Keep track of which back end server to assign the host to
+        self.next_server_address_index = 0
 
     '''
         Handles packet in events
@@ -81,9 +83,9 @@ class monitor(app_manager.RyuApp):
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
         
+        # Only do something if we receive an ARP message
         if pkt_arp:
             self.parse_arp(pkt_arp, msg, pkt)
-            self.packet_count += 1
             return
 
     '''
@@ -95,6 +97,7 @@ class monitor(app_manager.RyuApp):
         self.logger.info("New Arp Packet: %s",pkt_arp)
         self.logger.info("--------------------")
         
+        # Get the ethernet part of the packet
         eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
         
         # Get important information from the msg and eth packet
@@ -106,20 +109,21 @@ class monitor(app_manager.RyuApp):
         dst = eth.dst
         src = eth.src
         
-        for i in range(self.num_back_end):
-            if src == self.back_end_mac_addresses[i]:
-                return
-        for j in range(len(self.front_end_macs_served)):
-            if src == self.front_end_macs_served[j]:
-                return
+        # If the destination is not the virtual IP address, then don't do anything
         if pkt_arp.dst_ip != self.virtual_ip:
             return
         
+        for i in range(self.num_back_end):
+            if src == self.back_end_mac_addresses[i]:
+                return
+#        for j in range(len(self.front_end_macs_served)):
+#            if src == self.front_end_macs_served[j]:
+#                return
+        
         self.front_end_macs_served.append(src)
 
-        # Get index of next server to use and increment its count
+        # Get index of next server to use
         index = self.next_server_address_index
-        self.back_end_connection_counts[index] += 1
         
         # Update the next server index to know which back end to use next
         self.next_server_address_index += 1
