@@ -49,9 +49,9 @@ class monitor(app_manager.RyuApp):
             else:
                 self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
 
-        print(self.back_end_physical_addresses)
-        print(self.back_end_mac_addresses)
-        
+#        print(self.back_end_physical_addresses)
+#        print(self.back_end_mac_addresses)
+
         self.next_server_address_index = 0
         
         self.packet_count = 1 # Counter for the packet number
@@ -66,6 +66,7 @@ class monitor(app_manager.RyuApp):
 
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
+        self.logger.info("packet-in %s" % (pkt,))
 
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
@@ -86,21 +87,21 @@ class monitor(app_manager.RyuApp):
         address, port = msg.datapath.address # Get the switch address and port
 
         # Print out important information
-        self.logger.info("--------------------------------------------")
-        self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, msg.match['in_port'])
-        self.logger.info("\tARP")
-        self.logger.info("\t\tSrc  IP: %s", pkt_arp.src_ip)
-        self.logger.info("\t\tDest IP: %s", pkt_arp.dst_ip)
-        self.logger.info("\t\tSrc  MAC: %s", pkt_arp.src_mac)
-        self.logger.info("\t\tDest MAC: %s", pkt_arp.dst_mac)
-        self.logger.info("\tNOT IPV4")
-        self.logger.info("\tNOT IPV6")
-        self.logger.info("\tETH")
-        self.logger.info("\t\tFrom MAC: %s", pkt_eth.src)
-        self.logger.info("\t\tTo   MAC: %s", pkt_eth.dst)
-        self.logger.info("\tController Switch (OF)")
-        self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
-        
+#        self.logger.info("--------------------------------------------")
+#        self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, msg.match['in_port'])
+#        self.logger.info("\tARP")
+#        self.logger.info("\t\tSrc  IP: %s", pkt_arp.src_ip)
+#        self.logger.info("\t\tDest IP: %s", pkt_arp.dst_ip)
+#        self.logger.info("\t\tSrc  MAC: %s", pkt_arp.src_mac)
+#        self.logger.info("\t\tDest MAC: %s", pkt_arp.dst_mac)
+#        self.logger.info("\tNOT IPV4")
+#        self.logger.info("\tNOT IPV6")
+#        self.logger.info("\tETH")
+#        self.logger.info("\t\tFrom MAC: %s", pkt_eth.src)
+#        self.logger.info("\t\tTo   MAC: %s", pkt_eth.dst)
+#        self.logger.info("\tController Switch (OF)")
+#        self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
+
         # Get index of next server to use
         index = self.next_server_address_index
         self.back_end_connection_counts[index] += 1
