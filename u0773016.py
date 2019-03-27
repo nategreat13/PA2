@@ -44,7 +44,7 @@ class monitor(app_manager.RyuApp):
         self.back_end_connection_counts = []
         self.back_end_physical_addresses = []
         self.back_end_mac_addresses = []
-        for i in range(num_back_end):
+        for i in range(self.num_back_end):
             print(i)
             self.back_end_connection_counts.append(0)
             self.server_number = i + num_front_end + 1
@@ -55,7 +55,7 @@ class monitor(app_manager.RyuApp):
 #            else:
 #                back_end_connection_counts.append('00:00:00:00:00:' + str(server_number))
 
-        print(back_end_physical_addresses)
+        print(self.back_end_physical_addresses)
         
         self.next_server_address_index = 0
         
