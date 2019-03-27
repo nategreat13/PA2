@@ -103,7 +103,7 @@ class monitor(app_manager.RyuApp):
         
         # Get index of next server to use
         index = self.next_server_address_index
-        self.back_end_connection_counts[dst_mac] += 1
+        self.back_end_connection_counts[index] += 1
 
         self.next_server_address_index += 1
         if self.next_server_address_index == self.num_back_end:
