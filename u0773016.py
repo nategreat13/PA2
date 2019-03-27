@@ -132,8 +132,8 @@ class monitor(app_manager.RyuApp):
 
         datapath.send_msg(out)
 
-         Create the eth and arp packets to send to the back_end
-         host and combine them into one packet
+        # Create the eth and arp packets to send to the back_end
+        # host and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
         arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
                               dst_mac=dst_mac, dst_ip=dst_ip    )
