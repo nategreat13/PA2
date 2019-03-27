@@ -110,6 +110,9 @@ class monitor(app_manager.RyuApp):
         dst_mac = self.back_end_mac_addresses[self.next_server_address_index]
         dst_ip = self.back_end_physical_addresses[self.next_server_address_index]
 
+        print(dst_mac)
+        print(dst_ip)
+
 #        e = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
 #        a = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
 #                    dst_mac=dst_mac, dst_ip=pkt_arp.dst_ip)
