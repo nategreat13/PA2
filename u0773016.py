@@ -87,6 +87,8 @@ class monitor(app_manager.RyuApp):
         parser = datapath.ofproto_parser
         dst = eth.dst
         src = eth.src
+        
+        print(dst)
 
         # Get index of next server to use and increment its count
         index = self.next_server_address_index
@@ -123,7 +125,7 @@ class monitor(app_manager.RyuApp):
                                   in_port=ofproto.OFPP_CONTROLLER,
                                   actions=actions,
                                   data=data)
-                                  
+
         datapath.send_msg(out)
 
         # Create the eth and arp packets to send to the back_end
@@ -163,7 +165,7 @@ class monitor(app_manager.RyuApp):
         
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
         mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
-        self.logger.info("Adding Flow: %s",mod)
+        #self.logger.info("Adding Flow: %s",mod)
         datapath.send_msg(mod)
 
 
