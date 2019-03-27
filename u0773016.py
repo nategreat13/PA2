@@ -56,7 +56,7 @@ class monitor(app_manager.RyuApp):
                self. back_end_connection_counts.append('00:00:00:00:00:' + str(server_number))
 
         print(self.back_end_physical_addresses)
-        prinit(self.back_end_mac_addresses)
+        print(self.back_end_mac_addresses)
         
         self.next_server_address_index = 0
         
