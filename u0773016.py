@@ -28,10 +28,10 @@ class monitor(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(monitor, self).__init__(*args, **kwargs)
         CONF = cfg.CONF
-#        CONF.register_opts([
-#            cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
-#            cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
-#            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
+        CONF.register_opts([
+            cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
+            cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
+            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
 #
 #        print 'front_end_testers = {}'.format(CONF.front_end_testers))
 #        print 'back_end_testers = {}'.format(CONF.back_end_testers))
