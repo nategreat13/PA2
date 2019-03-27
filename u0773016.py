@@ -33,9 +33,14 @@ class monitor(app_manager.RyuApp):
             cfg.IntOpt('back_end_testers', default=0, help = ('Number of Back End Machines')),
             cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
 
-        print(CONF.front_end_testers)
-#        print 'back_end_testers = {}'.format(CONF.back_end_testers))
-#        print 'virtual_ip = {}'.format(CONF.virtual_ip))
+        num_front_end = CONF.front_end_testers
+        num_back_end = CONF.back_end_testers
+        virtual_ip = CONF.virtual_ip
+        
+        print(num_front_end)
+        print(num_back_end)
+        print(virtual_ip)
+        
         self.packet_count = 1 # Counter for the packet number
         
         self.h5count = 0
