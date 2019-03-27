@@ -49,11 +49,9 @@ class monitor(app_manager.RyuApp):
             else:
                 self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
 
-#        print(self.back_end_physical_addresses)
-#        print(self.back_end_mac_addresses)
-
         self.next_server_address_index = 0 # Keep track of which back end server to assign the host to
         self.packet_count = 1 # Counter for the packet number
+        self.mac_to_port = {}
 
     '''
         Handles packet in events
@@ -70,6 +68,8 @@ class monitor(app_manager.RyuApp):
 
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
+        
+        
         if pkt_arp:
             self.parse_arp(pkt_arp, msg, pkt)
             self.packet_count += 1
@@ -81,41 +81,35 @@ class monitor(app_manager.RyuApp):
     def parse_arp(self, pkt_arp, msg, pkt):
         pkt_eth = pkt.get_protocol(ethernet.ethernet) # Get the ethernet packet
         
+        # Get important information from the msg and eth packet
         in_port = msg.match['in_port']
-
         datapath = msg.datapath
-        address, port = msg.datapath.address # Get the switch address and port
+        dpid = datapath.id
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+        dst = eth.dst
+        src = eth.src
+        
+        # Learn the Mac and Port
+        self.mac_to_port.setdefault(dpid, {})
+        self.mac_to_port[dpid][src] = in_port
 
-        # Print out important information
-#        self.logger.info("--------------------------------------------")
-#        self.logger.info("Packet ( %s) Received on Port(%s) Eth ARP", self.packet_count, msg.match['in_port'])
-#        self.logger.info("\tARP")
-#        self.logger.info("\t\tSrc  IP: %s", pkt_arp.src_ip)
-#        self.logger.info("\t\tDest IP: %s", pkt_arp.dst_ip)
-#        self.logger.info("\t\tSrc  MAC: %s", pkt_arp.src_mac)
-#        self.logger.info("\t\tDest MAC: %s", pkt_arp.dst_mac)
-#        self.logger.info("\tNOT IPV4")
-#        self.logger.info("\tNOT IPV6")
-#        self.logger.info("\tETH")
-#        self.logger.info("\t\tFrom MAC: %s", pkt_eth.src)
-#        self.logger.info("\t\tTo   MAC: %s", pkt_eth.dst)
-#        self.logger.info("\tController Switch (OF)")
-#        self.logger.info("\t\tAddress, Port: ('%s', %s)", address, port)
-
-        # Get index of next server to use
+        # Get index of next server to use and increment its count
         index = self.next_server_address_index
-        self.logger.info("\nindex: %s",index)
-        self.logger.info("\nback end count: %s",self.back_end_connection_counts[index])
         self.back_end_connection_counts[index] += 1
-        self.logger.info("\nback end count: %s",self.back_end_connection_counts[index])
-
+        
+        # Update the next server index to know which back end to use next
         self.next_server_address_index += 1
+        
+        # If we get to the end of the list of back ends, start again at the beginning
         if self.next_server_address_index == self.num_back_end:
             self.next_server_address_index = 0
-
+        
+        # Get the actual mac and ip of the backend that will be assigned to the host
         dst_mac = self.back_end_mac_addresses[index]
         dst_ip = self.back_end_physical_addresses[index]
 
+        # Create the eth and arp packets and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
         arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=dst_mac,src_ip=self.virtual_ip,
                     dst_mac=pkt_arp.src_mac, dst_ip=pkt_arp.src_ip)
@@ -124,9 +118,8 @@ class monitor(app_manager.RyuApp):
         p.add_protocol(arp_pkt)
         p.serialize()
 
-        
-        ofproto = datapath.ofproto
-        parser = datapath.ofproto_parser
+        # Send the packet to the requesting host to update their arp table
+        # to point to the assigned backend
         self.logger.info("\npacket-out %s" % (p,))
         self.logger.info("-----------------------")
         data = p.data
