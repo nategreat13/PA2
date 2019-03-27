@@ -128,7 +128,7 @@ class monitor(app_manager.RyuApp):
                                   in_port=ofproto.OFPP_CONTROLLER,
                                   actions=actions,
                                   data=data)
-                                  
+        self.logger.info("Packet Out To Host: %s",p)
         datapath.send_msg(out)
 
         # Create the eth and arp packets to send to the back_end
@@ -151,6 +151,7 @@ class monitor(app_manager.RyuApp):
                               actions=actions,
                               data=data)
         
+        self.logger.info("Packet Out To Back End: %s",p)
         datapath.send_msg(out)
 
 
