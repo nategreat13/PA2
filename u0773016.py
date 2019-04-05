@@ -154,8 +154,6 @@ class monitor(app_manager.RyuApp):
         p.add_protocol(arp_pkt)
         p.serialize()
         
-        
-        
         self.logger.info("--------------------")
         self.logger.info("New Arp Packet: %s",p)
         self.logger.info("--------------------")
@@ -166,7 +164,7 @@ class monitor(app_manager.RyuApp):
         actions = [parser.OFPActionOutput(port=in_port)]
         out = parser.OFPPacketOut(datapath=datapath,
                                   buffer_id=ofproto.OFP_NO_BUFFER,
-                                  in_port=in_port,
+                                  in_port=ofproto.OFPP_CONTROLLER,
                                   actions=actions,
                                   data=data)
         datapath.send_msg(out)
