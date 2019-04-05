@@ -84,10 +84,6 @@ class monitor(app_manager.RyuApp):
         
         if eth.ethertype != ether_types.ETH_TYPE_ARP:
             return
-        
-        self.logger.info("--------------------")
-        self.logger.info("Packet in: %s",pkt)
-        self.logger.info("--------------------")
 
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
@@ -103,7 +99,7 @@ class monitor(app_manager.RyuApp):
     def parse_arp(self, pkt_arp, msg, pkt):
         
         self.logger.info("--------------------")
-        self.logger.info("New Arp Packet: %s",pkt_arp)
+        self.logger.info("Packet in: %s",pkt_arp)
         self.logger.info("--------------------")
         
         # Get the ethernet part of the packet
@@ -157,6 +153,12 @@ class monitor(app_manager.RyuApp):
         p.add_protocol(eth_pkt)
         p.add_protocol(arp_pkt)
         p.serialize()
+        
+        
+        
+        self.logger.info("--------------------")
+        self.logger.info("New Arp Packet: %s",pkt)
+        self.logger.info("--------------------")
 
         # Send the packet to the requesting host to update their arp table
         # to point to the assigned backend
