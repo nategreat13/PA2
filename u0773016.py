@@ -82,8 +82,8 @@ class monitor(app_manager.RyuApp):
         
         eth = pkt.get_protocol(ethernet.ethernet)
         
-        if eth.ethertype != ether_types.ETH_TYPE_ARP:
-            return
+#        if eth.ethertype != ether_types.ETH_TYPE_ARP:
+#            return
 
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
@@ -117,7 +117,7 @@ class monitor(app_manager.RyuApp):
 #        # If the destination is not the virtual IP address, then don't do anything
 #        if pkt_arp.dst_ip != self.virtual_ip:
 #            return
-        
+
         # If the packet came from a back end server
         for i in range(self.num_back_end):
             if src == self.back_end_mac_addresses[i]:
