@@ -82,8 +82,8 @@ class monitor(app_manager.RyuApp):
         
         eth = pkt.get_protocol(ethernet.ethernet)
         
-#        if eth.ethertype != ether_types.ETH_TYPE_ARP:
-#            return
+        if eth.ethertype != ether_types.ETH_TYPE_ARP:
+            return
 
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
@@ -160,13 +160,8 @@ class monitor(app_manager.RyuApp):
 
         # Send the packet to the requesting host to update their arp table
         # to point to the assigned backend
-        data = p.data
-        actions = [parser.OFPActionOutput(port=in_port)]
-        out = parser.OFPPacketOut(datapath=datapath,
-                                  buffer_id=ofproto.OFP_NO_BUFFER,
-                                  in_port=ofproto.OFPP_CONTROLLER,
-                                  actions=actions,
-                                  data=data)
+        out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
+                                                        in_port=back_end_port, actions=actions, data=data)
         datapath.send_msg(out)
 
         
