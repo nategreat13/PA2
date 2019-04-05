@@ -114,9 +114,9 @@ class monitor(app_manager.RyuApp):
         dst = eth.dst
         src = eth.src
         
-        # If the destination is not the virtual IP address, then don't do anything
-        if pkt_arp.dst_ip != self.virtual_ip:
-            return
+#        # If the destination is not the virtual IP address, then don't do anything
+#        if pkt_arp.dst_ip != self.virtual_ip:
+#            return
         
         # If the packet came from a back end server
         for i in range(self.num_back_end):
