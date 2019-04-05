@@ -166,7 +166,7 @@ class monitor(app_manager.RyuApp):
         actions = [parser.OFPActionOutput(port=in_port)]
         out = parser.OFPPacketOut(datapath=datapath,
                                   buffer_id=ofproto.OFP_NO_BUFFER,
-                                  in_port=ofproto.OFPP_IN_PORT,
+                                  in_port=in_port,
                                   actions=actions,
                                   data=data)
         datapath.send_msg(out)
