@@ -122,9 +122,9 @@ class monitor(app_manager.RyuApp):
         for i in range(self.num_back_end):
             if src == self.back_end_mac_addresses[i]:
                 return
-#        for j in range(len(self.front_end_macs_served)):
-#            if src == self.front_end_macs_served[j]:
-#                return
+        for j in range(len(self.front_end_macs_served)):
+            if src == self.front_end_macs_served[j]:
+                return
 
         # Add the front end to the list of front ends served
         self.front_end_macs_served.append(src)
