@@ -206,15 +206,15 @@ class monitor(app_manager.RyuApp):
         Much of this logic was found by looking at the simple_switch_13.py file.
     '''
     def add_flow(self, datapath, priority, match, actions):
-    ofproto = datapath.ofproto
-    parser = datapath.ofproto_parser
-    
-    inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
-    mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
-    self.logger.info("--------------------")
-    self.logger.info("Adding Flow: %s",mod)
-    self.logger.info("--------------------")
-    datapath.send_msg(mod)
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+        
+        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+        mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
+        self.logger.info("--------------------")
+        self.logger.info("Adding Flow: %s",mod)
+        self.logger.info("--------------------")
+        datapath.send_msg(mod)
 
 
 
