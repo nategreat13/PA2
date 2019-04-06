@@ -163,8 +163,8 @@ class monitor(app_manager.RyuApp):
         arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=dst_mac,src_ip=self.virtual_ip,
                           dst_mac=pkt_arp.src_mac, dst_ip=pkt_arp.src_ip)
         p = packet.Packet()
-                          p.add_protocol(eth_pkt)
-                          p.add_protocol(arp_pkt)
+        p.add_protocol(eth_pkt)
+        p.add_protocol(arp_pkt)
         p.serialize()
         
         # Send the packet to the requesting host to update their arp table
