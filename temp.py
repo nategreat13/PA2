@@ -143,64 +143,64 @@ pkt_arp = pkt.get_protocol(arp.arp)
         if self.next_server_address_index == self.num_back_end:
             self.next_server_address_index = 0
                 
-                # Get the actual mac, ip, and port of the backend that will be assigned to the host
-                dst_mac = self.back_end_mac_addresses[index]
-                dst_ip = self.back_end_physical_addresses[index]
-                back_end_port = self.back_end_ports[index]
-                
-                
-                # Add the flow from the front end to the back end
-                match = parser.OFPMatch(in_port=in_port,ipv4_dst=self.virtual_ip)
-                actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
-                self.add_flow(datapath, 1, match, actions)
-                
-                # Add the flow from the back end to the front end
-                match = parser.OFPMatch(in_port=back_end_port,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
-                actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
-                self.add_flow(datapath, 1, match, actions)
-                
-                
-                # Create the eth and arp packets to send to the requesting
-                # front end and combine them into one packet
-                eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
-                arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=dst_mac,src_ip=self.virtual_ip,
-                                  dst_mac=pkt_arp.src_mac, dst_ip=pkt_arp.src_ip)
-                p = packet.Packet()
-                                  p.add_protocol(eth_pkt)
-                                  p.add_protocol(arp_pkt)
-                p.serialize()
-                
-                # Send the packet to the requesting host to update their arp table
-                # to point to the assigned backend
-                data = p.data
-                actions = [parser.OFPActionOutput(port=in_port)]
-                out = parser.OFPPacketOut(datapath=datapath,
-                                          buffer_id=ofproto.OFP_NO_BUFFER,
-                                          in_port=ofproto.OFPP_IN_PORT,
-                                          actions=actions,
-                                          data=data)
-                datapath.send_msg(out)
+        # Get the actual mac, ip, and port of the backend that will be assigned to the host
+        dst_mac = self.back_end_mac_addresses[index]
+        dst_ip = self.back_end_physical_addresses[index]
+        back_end_port = self.back_end_ports[index]
+        
+        
+        # Add the flow from the front end to the back end
+        match = parser.OFPMatch(in_port=in_port,ipv4_dst=self.virtual_ip)
+        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
+        self.add_flow(datapath, 1, match, actions)
+        
+        # Add the flow from the back end to the front end
+        match = parser.OFPMatch(in_port=back_end_port,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
+        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
+        self.add_flow(datapath, 1, match, actions)
+        
+        
+        # Create the eth and arp packets to send to the requesting
+        # front end and combine them into one packet
+        eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
+        arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=dst_mac,src_ip=self.virtual_ip,
+                          dst_mac=pkt_arp.src_mac, dst_ip=pkt_arp.src_ip)
+        p = packet.Packet()
+                          p.add_protocol(eth_pkt)
+                          p.add_protocol(arp_pkt)
+        p.serialize()
+        
+        # Send the packet to the requesting host to update their arp table
+        # to point to the assigned backend
+        data = p.data
+        actions = [parser.OFPActionOutput(port=in_port)]
+        out = parser.OFPPacketOut(datapath=datapath,
+                                  buffer_id=ofproto.OFP_NO_BUFFER,
+                                  in_port=ofproto.OFPP_IN_PORT,
+                                  actions=actions,
+                                  data=data)
+        datapath.send_msg(out)
 
-#        # Create the eth and arp packets to send to the back_end
-#        # host and combine them into one packet
-#        eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
-#        arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
-#                              dst_mac=dst_mac, dst_ip=dst_ip    )
-#        p = packet.Packet()
-#        p.add_protocol(eth_pkt)
-#        p.add_protocol(arp_pkt)
-#        p.serialize()
-#
-#        # Send the packet to the back_end server to update their
-#        # arp table to point to the requesting host
-#        data = p.data
-#        actions = [parser.OFPActionOutput(port=back_end_port)]
-#        out = parser.OFPPacketOut(datapath=datapath,
-#                              buffer_id=ofproto.OFP_NO_BUFFER,
-#                              in_port=ofproto.OFPP_CONTROLLER,
-#                              actions=actions,
-#                              data=data)
-#        datapath.send_msg(out)
+        # Create the eth and arp packets to send to the back_end
+        # host and combine them into one packet
+        eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
+        arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,
+                              dst_mac=dst_mac, dst_ip=dst_ip    )
+        p = packet.Packet()
+        p.add_protocol(eth_pkt)
+        p.add_protocol(arp_pkt)
+        p.serialize()
+
+        # Send the packet to the back_end server to update their
+        # arp table to point to the requesting host
+        data = p.data
+        actions = [parser.OFPActionOutput(port=back_end_port)]
+        out = parser.OFPPacketOut(datapath=datapath,
+                              buffer_id=ofproto.OFP_NO_BUFFER,
+                              in_port=ofproto.OFPP_CONTROLLER,
+                              actions=actions,
+                              data=data)
+        datapath.send_msg(out)
 
 
 '''

@@ -44,46 +44,40 @@ class SimpleSwitch13(app_manager.RyuApp):
         # truncated packet data. In that case, we cannot output packets
         # correctly.  The bug has been fixed in OVS v2.1.0.
         match = parser.OFPMatch()
-        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
-                                          ofproto.OFPCML_NO_BUFFER)]
+        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER)]
         self.add_flow(datapath, 0, match, actions)
     
     def add_flow(self, datapath, priority, match, actions, buffer_id=None):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         
-        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
-                                             actions)]
-                                             if buffer_id:
-                                                 mod = parser.OFPFlowMod(datapath=datapath, buffer_id=buffer_id,
-                                                                         priority=priority, match=match,
-                                                                         instructions=inst)
-                                             else:
-                                                 mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
-                                                                         match=match, instructions=inst)
-                                                     datapath.send_msg(mod)
+        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+        if buffer_id:
+        mod = parser.OFPFlowMod(datapath=datapath, buffer_id=buffer_id, priority=priority, match=match, instructions=inst)
+        else:
+            mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
+        datapath.send_msg(mod)
 
-@set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
-def _packet_in_handler(self, ev):
-    # If you hit this you might want to increase
-    # the "miss_send_length" of your switch
-    if ev.msg.msg_len < ev.msg.total_len:
-        self.logger.debug("packet truncated: only %s of %s bytes",
-                          ev.msg.msg_len, ev.msg.total_len)
-                          msg = ev.msg
-                          datapath = msg.datapath
-                          ofproto = datapath.ofproto
-                          parser = datapath.ofproto_parser
-                          in_port = msg.match['in_port']
-                          
-                          pkt = packet.Packet(msg.data)
-                          eth = pkt.get_protocols(ethernet.ethernet)[0]
-                          
-                          if eth.ethertype == ether_types.ETH_TYPE_LLDP:
-                              # ignore lldp packet
-                              return
-                          dst = eth.dst
-    src = eth.src
+    @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
+    def _packet_in_handler(self, ev):
+        # If you hit this you might want to increase
+        # the "miss_send_length" of your switch
+        if ev.msg.msg_len < ev.msg.total_len:
+            self.logger.debug("packet truncated: only %s of %s bytes", ev.msg.msg_len, ev.msg.total_len)
+            msg = ev.msg
+            datapath = msg.datapath
+            ofproto = datapath.ofproto
+            parser = datapath.ofproto_parser
+            in_port = msg.match['in_port']
+          
+            pkt = packet.Packet(msg.data)
+            eth = pkt.get_protocols(ethernet.ethernet)[0]
+          
+          if eth.ethertype == ether_types.ETH_TYPE_LLDP:
+              # ignore lldp packet
+              return
+          dst = eth.dst
+        src = eth.src
         
         dpid = datapath.id
         self.mac_to_port.setdefault(dpid, {})
