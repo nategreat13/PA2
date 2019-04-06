@@ -30,44 +30,41 @@ class monitor(app_manager.RyuApp):
         super(monitor, self).__init__(*args, **kwargs)
         CONF = cfg.CONF
         print(CONF)
-        CONF.register_opts([
-                            cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')),
-                            cfg.IntOpt('back_end_servers', default=0, help = ('Number of Back End Machines')),
-                            cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
+        CONF.register_opts([ cfg.IntOpt('front_end_testers', default=0, help = ('Number of Front End Machines')), cfg.IntOpt('back_end_servers', default=0, help = ('Number of Back End Machines')), cfg.StrOpt('virtual_ip', default='default', help = ('Virtual IP'))])
             
-                            # Get the values from the config file
-                            self.num_front_end = CONF.front_end_testers
-                            self.num_back_end = CONF.back_end_servers
-                            self.virtual_ip = CONF.virtual_ip
-                            
-                            # If num_front_end == 0, assume there was no config file,
-                            # and set values to the dafault topology
-                            if (self.num_front_end == 0):
-                                self.num_front_end = 4
-                                    self.num_back_end = 2
-                                        self.virtual_ip = '10.0.0.10'
+        # Get the values from the config file
+        self.num_front_end = CONF.front_end_testers
+        self.num_back_end = CONF.back_end_servers
+        self.virtual_ip = CONF.virtual_ip
+        
+        # If num_front_end == 0, assume there was no config file,
+        # and set values to the dafault topology
+        if (self.num_front_end == 0):
+            self.num_front_end = 4
+            self.num_back_end = 2
+            self.virtual_ip = '10.0.0.10'
                                     
-                                    # Initiate lists to hold the back end IP addresses, MAC addresses, and ports
-                                    self.back_end_physical_addresses = []
-                                        self.back_end_mac_addresses = []
-                                            self.back_end_ports = []
-                                            
-                                            # Fill the lists with the appropriate information for the back ends
-                                            for i in range(self.num_back_end):
-                                                server_number = i + self.num_front_end + 1
-                                                    self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
-                                                    if server_number < 16:
-                                                        self.back_end_mac_addresses.append('00:00:00:00:00:0' + hex(server_number)[2:])
-                                                            else:
-                                                                self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
-                                                                    self.back_end_ports.append(server_number)
-                                                                        
-                                                                        # Initiate a list to keep track of Host Mac Addresses
-                                                                        # that have already been assigned to back end servers
-                                                                        self.front_end_macs_served = []
-                                                                        
-                                                                        # Keep track of which back end server to assign the host to
-                                                                            self.next_server_address_index = 0
+        # Initiate lists to hold the back end IP addresses, MAC addresses, and ports
+        self.back_end_physical_addresses = []
+        self.back_end_mac_addresses = []
+        self.back_end_ports = []
+                
+        # Fill the lists with the appropriate information for the back ends
+        for i in range(self.num_back_end):
+            server_number = i + self.num_front_end + 1
+            self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
+            if server_number < 16:
+                self.back_end_mac_addresses.append('00:00:00:00:00:0' + hex(server_number)[2:])
+            else:
+                self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
+            self.back_end_ports.append(server_number)
+                                    
+        # Initiate a list to keep track of Host Mac Addresses
+        # that have already been assigned to back end servers
+        self.front_end_macs_served = []
+
+        # Keep track of which back end server to assign the host to
+        self.next_server_address_index = 0
 
 '''
     Handles packet in events
