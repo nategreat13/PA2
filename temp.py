@@ -66,19 +66,19 @@ class monitor(app_manager.RyuApp):
         # Keep track of which back end server to assign the host to
         self.next_server_address_index = 0
 
-'''
+    '''
     Handles packet in events
     '''
-        @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
-        def packet_in_handler(self, ev):
+    @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
+    def packet_in_handler(self, ev):
         # Get message
         msg = ev.msg
-        
+
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
-        
+
         eth = pkt.get_protocol(ethernet.ethernet)
-        
+
         if eth.ethertype != ether_types.ETH_TYPE_ARP:
             return
 
@@ -86,17 +86,17 @@ class monitor(app_manager.RyuApp):
         self.logger.info("Packet in: %s",pkt)
         self.logger.info("--------------------")
 
-# Get the arp packet and parse it if it exists
-pkt_arp = pkt.get_protocol(arp.arp)
+        # Get the arp packet and parse it if it exists
+        pkt_arp = pkt.get_protocol(arp.arp)
 
-    # Only do something if we receive an ARP message
-    if pkt_arp:
-        self.parse_arp(pkt_arp, msg, pkt)
-        return
-    
+        # Only do something if we receive an ARP message
+        if pkt_arp:
+            self.parse_arp(pkt_arp, msg, pkt)
+            return
+
     '''
         Parses an arp packet and prints important information
-        '''
+    '''
     def parse_arp(self, pkt_arp, msg, pkt):
         
         self.logger.info("--------------------")
