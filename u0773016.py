@@ -82,8 +82,8 @@ class monitor(app_manager.RyuApp):
         
         eth = pkt.get_protocol(ethernet.ethernet)
         
-        if eth.ethertype != ether_types.ETH_TYPE_ARP:
-            return
+#        if eth.ethertype != ether_types.ETH_TYPE_ARP:
+#            return
 
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
@@ -114,9 +114,9 @@ class monitor(app_manager.RyuApp):
         dst = eth.dst
         src = eth.src
         
-#        # If the destination is not the virtual IP address, then don't do anything
-#        if pkt_arp.dst_ip != self.virtual_ip:
-#            return
+        # If the destination is not the virtual IP address, then don't do anything
+        if pkt_arp.dst_ip != self.virtual_ip:
+            return
 
         # If the packet came from a back end server
         for i in range(self.num_back_end):
@@ -144,6 +144,10 @@ class monitor(app_manager.RyuApp):
         dst_ip = self.back_end_physical_addresses[index]
         back_end_port = self.back_end_ports[index]
 
+        
+        
+        
+        
         # Create the eth and arp packets to send to the requesting
         # front end and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
@@ -163,7 +167,7 @@ class monitor(app_manager.RyuApp):
         data = p.data
         actions = [parser.OFPActionOutput(port=in_port)]
         out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
-                                      in_port=ofproto.OFPP_IN_PORT, actions=actions, data=data)
+                                      in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=data)
         datapath.send_msg(out)
 
         
