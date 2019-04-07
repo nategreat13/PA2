@@ -144,10 +144,6 @@ class monitor(app_manager.RyuApp):
         dst_ip = self.back_end_physical_addresses[index]
         back_end_port = self.back_end_ports[index]
 
-        
-        
-        
-        
         # Create the eth and arp packets to send to the requesting
         # front end and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
@@ -159,7 +155,7 @@ class monitor(app_manager.RyuApp):
         p.serialize()
         
         self.logger.info("--------------------")
-        self.logger.info("New Arp Packet: %s",p)
+        self.logger.info("Host Arp Packet: %s",p)
         self.logger.info("--------------------")
 
         # Send the packet to the requesting host to update their arp table
@@ -168,6 +164,28 @@ class monitor(app_manager.RyuApp):
         actions = [parser.OFPActionOutput(port=in_port)]
         out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
                                       in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=data)
+        datapath.send_msg(out)
+
+
+        # Create the eth and arp packets to send to the requesting
+        # front end and combine them into one packet
+        eth_pkt = ethernet.ethernet(dst=dst_mac, src=arp_pkt.src_mac, ethertype=ether.ETH_TYPE_ARP)
+        arp_pkt = arp.arp(hwtype=pkt_arp.hwtype,proto=pkt_arp.proto,hlen=pkt_arp.hlen,plen=pkt_arp.plen,opcode=pkt_arp.opcode,src_mac=pkt_arp.src_mac,src_ip=pkt_arp.src_ip,dst_mac=dst_mac, dst_ip=dst_ip)
+        p = packet.Packet()
+        p.add_protocol(eth_pkt)
+        p.add_protocol(arp_pkt)
+        p.serialize()
+                          
+        self.logger.info("--------------------")
+        self.logger.info("Server Arp Packet: %s",p)
+        self.logger.info("--------------------")
+                          
+        # Send the packet to the requesting host to update their arp table
+        # to point to the assigned backend
+        data = p.data
+        actions = [parser.OFPActionOutput(port=back_end_port)]
+        out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
+                                in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=data)
         datapath.send_msg(out)
 
         
