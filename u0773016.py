@@ -21,7 +21,7 @@ from ryu.lib.packet import ether_types
 from ryu import cfg
 
 '''
-    UPDATE
+    UPDATED
 '''
 class monitor(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
