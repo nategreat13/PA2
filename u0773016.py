@@ -117,11 +117,11 @@ class monitor(app_manager.RyuApp):
         dst = eth.dst
         src = eth.src
 
-        # If the packet destination is a MAC we have handled, send
-        # an arp request back to the back end to update it's ARP table
-        for i in range(len(self.front_end_macs_served)):
-            if dst == self.front_end_macs_served[i]:
-                return
+        # # If the packet destination is a MAC we have handled, send
+        # # an arp request back to the back end to update it's ARP table
+        # for i in range(len(self.front_end_macs_served)):
+        #     if dst == self.front_end_macs_served[i]:
+        #         return
 
         # If the destination is not the virtual IP address, then don't do anything
         if pkt_arp.dst_ip != self.virtual_ip:
@@ -145,6 +145,16 @@ class monitor(app_manager.RyuApp):
         dst_ip = self.back_end_physical_addresses[index]
         back_end_port = self.back_end_ports[index]
 
+        # Add the flow from the front end to the back end
+        match = parser.OFPMatch(in_port=in_port,eth_type=0x0800,ipv4_dst=self.virtual_ip)
+        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
+        self.add_flow(datapath, 1, match, actions)
+
+        # Add the flow from the back end to the front end
+        match = parser.OFPMatch(in_port=back_end_port,eth_type=0x0800,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
+        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
+        self.add_flow(datapath, 1, match, actions)
+
         # Create the eth and arp packets to send to the requesting
         # front end and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
@@ -159,16 +169,6 @@ class monitor(app_manager.RyuApp):
         self.logger.info("--------------------")
         self.logger.info("Host Arp Packet: %s", p)
         self.logger.info("--------------------")
-
-        # Add the flow from the front end to the back end
-        match = parser.OFPMatch(in_port=in_port,eth_type=0x0800,ipv4_dst=self.virtual_ip)
-        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
-        self.add_flow(datapath, 1, match, actions)
-
-        # Add the flow from the back end to the front end
-        match = parser.OFPMatch(in_port=back_end_port,eth_type=0x0800,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
-        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
-        self.add_flow(datapath, 1, match, actions)
 
         # Send the packet to the requesting host to update their arp table
         # to point to the assigned backend
