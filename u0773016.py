@@ -158,7 +158,7 @@ class monitor(app_manager.RyuApp):
         # Create the eth and arp packets to send to the requesting
         # front end and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
-        arp_pkt = arp.arp(opcode=arp.APR_REPLY, src_mac=dst_mac, src_ip=self.virtual_ip,
+        arp_pkt = arp.arp(opcode=arp.ARP_REPLY, src_mac=dst_mac, src_ip=self.virtual_ip,
                           dst_mac=pkt_arp.src_mac, dst_ip=pkt_arp.src_ip)
         p = packet.Packet()
         p.add_protocol(eth_pkt)
