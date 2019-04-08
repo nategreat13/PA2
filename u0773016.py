@@ -188,4 +188,30 @@ class monitor(app_manager.RyuApp):
                                 in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=data)
         datapath.send_msg(out)
 
+        # Add the flow from the front end to the back end
+        match = parser.OFPMatch(in_port=in_port,ipv4_dst=self.virtual_ip)
+        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
+        self.add_flow(datapath, 1, match, actions)
+        
+        # Add the flow from the back end to the front end
+        match = parser.OFPMatch(in_port=back_end_port,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
+        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
+        self.add_flow(datapath, 1, match, actions)
+
+    '''
+        This function adds a flow to the switch in route future traffic
+        through the switch without going through the controller.
+        Much of this logic was found by looking at the simple_switch_13.py file.
+    '''
+    def add_flow(self, datapath, priority, match, actions):
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+        
+        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+        mod = parser.OFPFlowMod(datapath=datapath, priority=priority, match=match, instructions=inst)
+        self.logger.info("--------------------")
+        self.logger.info("Adding Flow: %s",mod)
+        self.logger.info("--------------------")
+        datapath.send_msg(mod)
+
         
