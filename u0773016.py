@@ -166,7 +166,18 @@ class monitor(app_manager.RyuApp):
                                       in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=data)
         datapath.send_msg(out)
 
-
+        
+        # Add the flow from the front end to the back end
+        match = parser.OFPMatch(in_port=in_port,ipv4_dst=self.virtual_ip)
+        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
+        self.add_flow(datapath, 1, match, actions)
+        
+        # Add the flow from the back end to the front end
+        match = parser.OFPMatch(in_port=back_end_port,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
+        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
+        self.add_flow(datapath, 1, match, actions)
+        
+        
         # Create the eth and arp packets to send to the requesting
         # front end and combine them into one packet
         eth_pkt = ethernet.ethernet(dst=dst_mac, src=arp_pkt.src_mac, ethertype=ether.ETH_TYPE_ARP)
@@ -187,16 +198,6 @@ class monitor(app_manager.RyuApp):
         out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
                                 in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=data)
         datapath.send_msg(out)
-
-        # Add the flow from the front end to the back end
-        match = parser.OFPMatch(in_port=in_port,ipv4_dst=self.virtual_ip)
-        actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
-        self.add_flow(datapath, 1, match, actions)
-        
-        # Add the flow from the back end to the front end
-        match = parser.OFPMatch(in_port=back_end_port,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
-        actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
-        self.add_flow(datapath, 1, match, actions)
 
     '''
         This function adds a flow to the switch in route future traffic
