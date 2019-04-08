@@ -79,8 +79,6 @@ class monitor(app_manager.RyuApp):
         # Get message
         msg = ev.msg
 
-        self.logger.info("HERE")
-
         # Get packet out of message
         pkt = packet.Packet(data=msg.data)
 
