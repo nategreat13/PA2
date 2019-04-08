@@ -162,12 +162,12 @@ class monitor(app_manager.RyuApp):
         self.logger.info("--------------------")
 
         # Add the flow from the front end to the back end
-        match = parser.OFPMatch(in_port=in_port,ipv4_dst=self.virtual_ip)
+        match = parser.OFPMatch(in_port=in_port,eth_type=0x0800,ipv4_dst=self.virtual_ip)
         actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
         self.add_flow(datapath, 1, match, actions)
 
         # Add the flow from the back end to the front end
-        match = parser.OFPMatch(in_port=back_end_port,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
+        match = parser.OFPMatch(in_port=back_end_port,eth_type=0x0800,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
         actions = [parser.OFPActionSetField(ipv4_src=self.virtual_ip),parser.OFPActionOutput(in_port)]
         self.add_flow(datapath, 1, match, actions)
 
