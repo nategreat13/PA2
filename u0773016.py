@@ -174,9 +174,9 @@ class monitor(app_manager.RyuApp):
         # Send the packet to the requesting host to update their arp table
         # to point to the assigned backend
         data = p.data
-        actions = [parser.OFPActionOutput(port=in_port)]
+        actions = [parser.OFPActionOutput(port=ofproto.OFPP_IN_PORT)]
         out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
-                                  in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=data)
+                                  in_port=in_port, actions=actions, data=data)
         datapath.send_msg(out)
 
         # # Create the eth and arp packets to send to the back_end
