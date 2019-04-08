@@ -71,6 +71,8 @@ class monitor(app_manager.RyuApp):
         # Keep track of which back end server to assign the host to
         self.next_server_address_index = 0
 
+        self.canReceive = 1
+
 
     '''
         Handles packet in events
@@ -91,6 +93,9 @@ class monitor(app_manager.RyuApp):
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
 
+        if self.canReceive == 0:
+            return
+
         # Only do something if we receive an ARP message
         if pkt_arp:
             self.parse_arp(pkt_arp, msg, pkt)
@@ -104,6 +109,8 @@ class monitor(app_manager.RyuApp):
         self.logger.info("--------------------")
         self.logger.info("Packet in: %s", pkt_arp)
         self.logger.info("--------------------")
+
+        self.canReceive = 0
 
         # Get the ethernet part of the packet
         eth = pkt.get_protocol(ethernet.ethernet)  # Get the ethernet packet
