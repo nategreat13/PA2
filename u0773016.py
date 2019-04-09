@@ -119,7 +119,7 @@ class monitor(app_manager.RyuApp):
             return
 
     '''
-        Parses an arp packet and sends appropriate ARP replies and Flow Mod messages.
+        Parses an arp packet and sends appropriate ARP replies and Flow Mod messages
     '''
     def parse_arp(self, pkt_arp, msg, pkt):
 
