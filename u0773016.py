@@ -137,7 +137,6 @@ class monitor(app_manager.RyuApp):
 
         self.logger.info("--------------------")
         self.logger.info("ARP Request from %s to %s on Port %s", src, pkt_arp.dst_ip, in_port)
-        self.logger.info("--------------------")
 
         # If the packet destination is a MAC we have handled, send
         # an arp request back to the back end to update it's ARP table
@@ -158,9 +157,7 @@ class monitor(app_manager.RyuApp):
                 p.serialize()
 
                 self.logger.info("--------------------")
-                self.logger.info("Server Arp Packet: %s", p)
-                self.logger.info("Port: %s", in_port)
-                self.logger.info("--------------------")
+                self.logger.info("Sending ARP Reply to %s to send packets for % to %", src, src_ip, dst_mac)
 
                 # Send the packet to the requesting host to update their arp table
                 # to point to the assigned backend
@@ -195,10 +192,19 @@ class monitor(app_manager.RyuApp):
         dst_ip = self.back_end_physical_addresses[index]
         back_end_port = self.back_end_ports[index]
 
+        self.logger.info("--------------------")
+        self.logger.info("Assigning Host to Server at %s", dst_mac)
+
+        self.logger.info("--------------------")
+        self.logger.info("Adding Flow From % to % on Port %", src, self.virtual_ip, back_end_port)
+
         # Add the flow from the front end to the back end
         match = parser.OFPMatch(in_port=in_port,eth_type=0x0800,ipv4_dst=self.virtual_ip)
         actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
         self.add_flow(datapath, 1, match, actions)
+
+        self.logger.info("--------------------")
+        self.logger.info("Adding Flow From % to % on Port %", dst_mac, pkt_arp.src_ip, in_port)
 
         # Add the flow from the back end to the front end
         match = parser.OFPMatch(in_port=back_end_port,eth_type=0x0800,ipv4_src=dst_ip,ipv4_dst=pkt_arp.src_ip)
@@ -216,8 +222,7 @@ class monitor(app_manager.RyuApp):
         p.serialize()
 
         self.logger.info("--------------------")
-        self.logger.info("Host Arp Packet: %s", p)
-        self.logger.info("--------------------")
+        self.logger.info("Sending ARP Reply to %s to send packets for % to %", src, self.virtual_ip, dst_mac)
 
         # Send the packet to the requesting host to update their arp table
         # to point to the assigned backend
