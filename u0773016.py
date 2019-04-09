@@ -3,7 +3,7 @@
     u0773016
     University of Utah
     CS 4480
-    March 27, 2019
+    April 8, 2019
 '''
 
 from ryu.base import app_manager
@@ -21,15 +21,26 @@ from ryu.lib.packet import ether_types
 from ryu import cfg
 
 '''
-    UPDATED
+    This is a load balancing RYU controller that only handles ARP requests. 
+    Given a number of front end machines, a number of back end servers, and
+    a virtual IP address, the controller assigns each inquiring host to a
+    back end server in a round robin fashion, alternating which server is
+    assigned, in order to ensure a balance. An optional config file can
+    be provided to specify the number of front end and back end machines, 
+    as well as a specific virtual IP address.
 '''
 
 
 class monitor(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
+    '''
+        This function initializes the environment and helper variables and functions.
+    '''
     def __init__(self, *args, **kwargs):
         super(monitor, self).__init__(*args, **kwargs)
+
+        # Read the config file if it is provided
         CONF = cfg.CONF
         CONF.register_opts([
             cfg.IntOpt('front_end_testers', default=0, help=('Number of Front End Machines')),
@@ -42,7 +53,7 @@ class monitor(app_manager.RyuApp):
         self.virtual_ip = CONF.virtual_ip
 
         # If num_front_end == 0, assume there was no config file,
-        # and set values to the dafault topology
+        # and set values to the default topology
         if (self.num_front_end == 0):
             self.num_front_end = 4
             self.num_back_end = 2
@@ -52,6 +63,16 @@ class monitor(app_manager.RyuApp):
         self.back_end_physical_addresses = []
         self.back_end_mac_addresses = []
         self.back_end_ports = []
+
+        # Fill the lists with the appropriate information for the back ends
+        for i in range(self.num_back_end):
+            server_number = i + self.num_front_end + 1
+            self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
+            if server_number < 16:
+                self.back_end_mac_addresses.append('00:00:00:00:00:0' + hex(server_number)[2:])
+            else:
+                self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
+            self.back_end_ports.append(server_number)
 
         # Initiate dictionary to hold front end IP to MAC mappings
         self.front_end_ip_to_mac = {}
@@ -63,16 +84,6 @@ class monitor(app_manager.RyuApp):
             else:
                 front_end_mac = '00:00:00:00:00:' + hex(front_end_number)[2:]
             self.front_end_ip_to_mac['10.0.0.' + str(front_end_number)] = front_end_mac
-
-        # Fill the lists with the appropriate information for the back ends
-        for i in range(self.num_back_end):
-            server_number = i + self.num_front_end + 1
-            self.back_end_physical_addresses.append('10.0.0.' + str(server_number))
-            if server_number < 16:
-                self.back_end_mac_addresses.append('00:00:00:00:00:0' + hex(server_number)[2:])
-            else:
-                self.back_end_mac_addresses.append('00:00:00:00:00:' + hex(server_number)[2:])
-            self.back_end_ports.append(server_number)
 
         # Initiate a list to keep track of Host Mac Addresses
         # that have already been assigned to back end servers
@@ -108,7 +119,7 @@ class monitor(app_manager.RyuApp):
             return
 
     '''
-        Parses an arp packet and prints important information
+        Parses an arp packet and sends appropriate ARP replies and Flow Mod messages.
     '''
     def parse_arp(self, pkt_arp, msg, pkt):
 
