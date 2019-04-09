@@ -159,8 +159,8 @@ class monitor(app_manager.RyuApp):
                 self.logger.info("Sending ARP Reply to %s to send packets for %s to %s", src, src_ip, dst_mac)
                 self.logger.info("--------------------")
 
-                # Send the packet to the requesting host to update their arp table
-                # to point to the assigned backend
+                # Send the packet to the server to update their arp table
+                # to point to the front end
                 data = p.data
                 actions = [parser.OFPActionOutput(port=ofproto.OFPP_IN_PORT)]
                 out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
@@ -170,7 +170,6 @@ class monitor(app_manager.RyuApp):
 
         # If the destination is not the virtual IP address, then don't do anything
         if pkt_arp.dst_ip != self.virtual_ip:
-            # Assume it came from the server
             return
 
         # Add the front end to the list of front ends served
