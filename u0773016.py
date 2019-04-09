@@ -156,8 +156,8 @@ class monitor(app_manager.RyuApp):
                 p.add_protocol(arp_pkt)
                 p.serialize()
 
-                self.logger.info("--------------------")
                 self.logger.info("Sending ARP Reply to %s to send packets for %s to %s", src, src_ip, dst_mac)
+                self.logger.info("--------------------")
 
                 # Send the packet to the requesting host to update their arp table
                 # to point to the assigned backend
@@ -192,10 +192,8 @@ class monitor(app_manager.RyuApp):
         dst_ip = self.back_end_physical_addresses[index]
         back_end_port = self.back_end_ports[index]
 
-        self.logger.info("--------------------")
         self.logger.info("Assigning Host to Server at %s", dst_mac)
 
-        self.logger.info("--------------------")
         self.logger.info("Adding Flow From %s to %s on Port %s", src, self.virtual_ip, back_end_port)
 
         # Add the flow from the front end to the back end
@@ -203,7 +201,6 @@ class monitor(app_manager.RyuApp):
         actions = [parser.OFPActionSetField(ipv4_dst=dst_ip), parser.OFPActionOutput(back_end_port)]
         self.add_flow(datapath, 1, match, actions)
 
-        self.logger.info("--------------------")
         self.logger.info("Adding Flow From %s to %s on Port %s", dst_mac, pkt_arp.src_ip, in_port)
 
         # Add the flow from the back end to the front end
@@ -221,7 +218,6 @@ class monitor(app_manager.RyuApp):
         p.add_protocol(arp_pkt)
         p.serialize()
 
-        self.logger.info("--------------------")
         self.logger.info("Sending ARP Reply to %s to send packets for %s to %s", src, self.virtual_ip, dst_mac)
 
         # Send the packet to the requesting host to update their arp table
