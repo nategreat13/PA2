@@ -77,6 +77,7 @@ class monitor(app_manager.RyuApp):
         # Initiate a list to keep track of Host Mac Addresses
         # that have already been assigned to back end servers
         self.front_end_macs_served = []
+        self.front_end_ips_served = []
 
         # Keep track of which back end server to assign the host to
         self.next_server_address_index = 0
@@ -129,8 +130,8 @@ class monitor(app_manager.RyuApp):
 
         # If the packet destination is a MAC we have handled, send
         # an arp request back to the back end to update it's ARP table
-        for i in range(len(self.front_end_macs_served)):
-            if dst == self.front_end_macs_served[i]:
+        for i in range(len(self.front_end_ips_served)):
+            if pkt_arp.dst_ip == self.front_end_ips_served[i]:
                 # Create the eth and arp packets to send to the requesting
                 # front end and combine them into one packet
                 front_end_mac = self.front_end_ip_to_mac[pkt_arp.dst_ip]
@@ -162,6 +163,7 @@ class monitor(app_manager.RyuApp):
 
         # Add the front end to the list of front ends served
         self.front_end_macs_served.append(src)
+        self.front_end_ips_served.append(pkt_arp.src_ip)
 
         # Get index of next server to use
         index = self.next_server_address_index
