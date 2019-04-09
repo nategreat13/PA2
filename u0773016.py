@@ -157,7 +157,7 @@ class monitor(app_manager.RyuApp):
                 actions = [parser.OFPActionOutput(port=ofproto.OFPP_IN_PORT)]
                 out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
                                           in_port=in_port, actions=actions, data=data)
-                # datapath.send_msg(out)
+                datapath.send_msg(out)
                 return
 
         # If the destination is not the virtual IP address, then don't do anything
