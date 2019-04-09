@@ -59,9 +59,9 @@ class monitor(app_manager.RyuApp):
             front_end_number = i + 1
             front_end_mac = ''
             if front_end_number < 16:
-                front_end_mac = '00:00:00:00:00:0' + hex(server_number)[2:]
+                front_end_mac = '00:00:00:00:00:0' + hex(front_end_number)[2:]
             else:
-                front_end_mac = '00:00:00:00:00:' + hex(server_number)[2:]
+                front_end_mac = '00:00:00:00:00:' + hex(front_end_number)[2:]
             self.front_end_ip_to_mac['10.0.0.' + str(front_end_number)] = front_end_mac
 
         # Fill the lists with the appropriate information for the back ends
