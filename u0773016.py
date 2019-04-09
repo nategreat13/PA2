@@ -148,6 +148,7 @@ class monitor(app_manager.RyuApp):
 
                 self.logger.info("--------------------")
                 self.logger.info("Server Arp Packet: %s", p)
+                self.logger.info("Port: %s", in_port)
                 self.logger.info("--------------------")
 
                 # Send the packet to the requesting host to update their arp table
