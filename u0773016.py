@@ -136,7 +136,7 @@ class monitor(app_manager.RyuApp):
         src = eth.src
 
         self.logger.info("--------------------")
-        self.logger.info("ARP Request from %s %s to %s on Port %s", src, pkt_arp.dst_ip, in_port)
+        self.logger.info("ARP Request from %s to %s on Port %s", src, pkt_arp.dst_ip, in_port)
         self.logger.info("--------------------")
 
         # If the packet destination is a MAC we have handled, send
