@@ -157,7 +157,7 @@ class monitor(app_manager.RyuApp):
                 p.serialize()
 
                 self.logger.info("--------------------")
-                self.logger.info("Sending ARP Reply to %s to send packets for % to %", src, src_ip, dst_mac)
+                self.logger.info("Sending ARP Reply to %s to send packets for %s to %s", src, src_ip, dst_mac)
 
                 # Send the packet to the requesting host to update their arp table
                 # to point to the assigned backend
