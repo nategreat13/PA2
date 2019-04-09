@@ -81,9 +81,6 @@ class monitor(app_manager.RyuApp):
         pkt = packet.Packet(data=msg.data)
         
         eth = pkt.get_protocol(ethernet.ethernet)
-        
-#        if eth.ethertype != ether_types.ETH_TYPE_ARP:
-#            return
 
         # Get the arp packet and parse it if it exists
         pkt_arp = pkt.get_protocol(arp.arp)
@@ -126,6 +123,26 @@ class monitor(app_manager.RyuApp):
         # If the packet came from a previously identified MAC
         for j in range(len(self.front_end_macs_served)):
             if src == self.front_end_macs_served[j]:
+                # Create the eth and arp packets to send to the backend
+                eth_pkt = ethernet.ethernet(dst=arp_pkt.src_mac, src=dst_mac, ethertype=ether.ETH_TYPE_ARP)
+                arp_pkt = arp.arp(opcode=arp.ARP_REPLY, src_mac=pkt_arp.src_mac, src_ip=pkt_arp.src_ip,
+                                  dst_mac=dst_mac, dst_ip=dst_ip)
+                p = packet.Packet()
+                p.add_protocol(eth_pkt)
+                p.add_protocol(arp_pkt)
+                p.serialize()
+
+                self.logger.info("--------------------")
+                self.logger.info("Server Arp Packet: %s", p)
+                self.logger.info("--------------------")
+
+                # Send the packet to the requesting host to update their arp table
+                # to point to the assigned backend
+                data = p.data
+                actions = [parser.OFPActionOutput(port=back_end_port)]
+                out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
+                                          in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=data)
+                datapath.send_msg(out)
                 return
 
         # Add the front end to the list of front ends served

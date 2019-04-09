@@ -53,6 +53,17 @@ class monitor(app_manager.RyuApp):
         self.back_end_mac_addresses = []
         self.back_end_ports = []
 
+        # Initiate dictionary to hold front end IP to MAC mappings
+        self.front_end_ip_to_mac = {}
+        for i in range(self.num_front_end):
+            front_end_number = i + 1
+            front_end_mac = ''
+            if front_end_number < 16:
+                front_end_mac = '00:00:00:00:00:0' + hex(server_number)[2:]
+            else:
+                front_end_mac = '00:00:00:00:00:' + hex(server_number)[2:]
+            self.front_end_ip_to_mac['10.0.0.' + str(front_end_number)] = front_end_mac
+
         # Fill the lists with the appropriate information for the back ends
         for i in range(self.num_back_end):
             server_number = i + self.num_front_end + 1
@@ -116,11 +127,33 @@ class monitor(app_manager.RyuApp):
         dst = eth.dst
         src = eth.src
 
-        # # If the packet destination is a MAC we have handled, send
-        # # an arp request back to the back end to update it's ARP table
-        # for i in range(len(self.front_end_macs_served)):
-        #     if dst == self.front_end_macs_served[i]:
-        #         return
+        # If the packet destination is a MAC we have handled, send
+        # an arp request back to the back end to update it's ARP table
+        for i in range(len(self.front_end_macs_served)):
+            if dst == self.front_end_macs_served[i]:
+                # Create the eth and arp packets to send to the requesting
+                # front end and combine them into one packet
+                front_end_mac = self.front_end_ip_to_mac[pkt_arp.dst_ip]
+                eth_pkt = ethernet.ethernet(dst=pkt_arp.src_mac, src=front_end_mac, ethertype=ether.ETH_TYPE_ARP)
+                arp_pkt = arp.arp(opcode=arp.ARP_REPLY, src_mac=front_end_mac, src_ip=pkt_arp.dst_ip,
+                                  dst_mac=pkt_arp.src_mac, dst_ip=pkt_arp.src_ip)
+                p = packet.Packet()
+                p.add_protocol(eth_pkt)
+                p.add_protocol(arp_pkt)
+                p.serialize()
+
+                self.logger.info("--------------------")
+                self.logger.info("Server Arp Packet: %s", p)
+                self.logger.info("--------------------")
+
+                # Send the packet to the requesting host to update their arp table
+                # to point to the assigned backend
+                data = p.data
+                actions = [parser.OFPActionOutput(port=ofproto.OFPP_IN_PORT)]
+                out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
+                                          in_port=in_port, actions=actions, data=data)
+                # datapath.send_msg(out)
+                return
 
         # If the destination is not the virtual IP address, then don't do anything
         if pkt_arp.dst_ip != self.virtual_ip:
@@ -176,28 +209,6 @@ class monitor(app_manager.RyuApp):
         out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
                                   in_port=in_port, actions=actions, data=data)
         datapath.send_msg(out)
-
-        # # Create the eth and arp packets to send to the back_end
-        # # host and combine them into one packet
-        # eth_pkt = ethernet.ethernet(dst=dst_mac, src=pkt_arp.src_mac, ethertype=ether.ETH_TYPE_ARP)
-        # arp_pkt = arp.arp(hwtype=pkt_arp.hwtype, proto=pkt_arp.proto, hlen=pkt_arp.hlen, plen=pkt_arp.plen,
-        #                   opcode=pkt_arp.opcode, src_mac=pkt_arp.src_mac, src_ip=pkt_arp.src_ip,
-        #                   dst_mac=dst_mac, dst_ip=dst_ip)
-        # p = packet.Packet()
-        # p.add_protocol(eth_pkt)
-        # p.add_protocol(arp_pkt)
-        # p.serialize()
-        #
-        # # Send the packet to the back_end server to update their
-        # # arp table to point to the requesting host
-        # data = p.data
-        # actions = [parser.OFPActionOutput(port=back_end_port)]
-        # out = parser.OFPPacketOut(datapath=datapath,
-        #                           buffer_id=ofproto.OFP_NO_BUFFER,
-        #                           in_port=ofproto.OFPP_CONTROLLER,
-        #                           actions=actions,
-        #                           data=data)
-        # datapath.send_msg(out)
 
     '''
         This function adds a flow to the switch in route future traffic
