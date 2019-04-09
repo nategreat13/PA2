@@ -123,10 +123,6 @@ class monitor(app_manager.RyuApp):
     '''
     def parse_arp(self, pkt_arp, msg, pkt):
 
-        self.logger.info("--------------------")
-        self.logger.info("Packet in: %s", pkt_arp)
-        self.logger.info("--------------------")
-
         # Get the ethernet part of the packet
         eth = pkt.get_protocol(ethernet.ethernet)  # Get the ethernet packet
 
@@ -138,6 +134,10 @@ class monitor(app_manager.RyuApp):
         parser = datapath.ofproto_parser
         dst = eth.dst
         src = eth.src
+
+        self.logger.info("--------------------")
+        self.logger.info("ARP Request from %s %s to %s on Port %s", src, pkt_arp.dst_ip, in_port)
+        self.logger.info("--------------------")
 
         # If the packet destination is a MAC we have handled, send
         # an arp request back to the back end to update it's ARP table
